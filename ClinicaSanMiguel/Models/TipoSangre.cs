@@ -6,6 +6,6 @@
         public string tipoSangre {  set; get; } = string.Empty;
 
         // Relacion
-        public ICollection<Paciente> Pacientes { get; set; }
+        public ICollection<Paciente> Pacientes { get; set; } = new List<Paciente>();
     }
 }

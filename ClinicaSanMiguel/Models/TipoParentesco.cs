@@ -6,6 +6,6 @@
         public string parentesco { get; set; } = string.Empty;
 
         // Relacion
-        public ICollection<PacientesParentesco> PacientesParentesco { get; set; } = null!;
+        public ICollection<PacientesParentesco> PacientesParentescos { get; set; } = new List<PacientesParentesco>();
     }
 }
