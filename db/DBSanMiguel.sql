@@ -67,16 +67,16 @@ Create Table Pacientes(
 	apellidoPaterno varchar(25) not null,
 	apellidoMaterno varchar(25) not null,
 	fechaNacimiento date null,
-	idGenero int foreign key references Generos(idGenero),
 	peso decimal(10,2) null,
 	altura decimal(10,2) null,
-	idTipoSangre int foreign key references TipoSangre(idTipoSangre),
 	celular varchar(9) null,
 	correo varchar(50) null,
-	idTipoDocumento int foreign key references TipoDocumento(idTipoDocumento),
 	documento varchar(20) not null,
 	password varchar(50) null,
 	titular bit default 0,
+	idTipoDocumento int foreign key references TipoDocumento(idTipoDocumento),
+	idGenero int foreign key references Generos(idGenero),
+	idTipoSangre int foreign key references TipoSangre(idTipoSangre),
 	unique(idTipoDocumento, documento)
 )
 GO
@@ -105,3 +105,13 @@ Create Table CitaMedica(
     precio decimal(10,2) not null
 )
 GO
+
+Create Table ClinicaMedico (
+    idClinica int not null foreign key references Clinicas(idClinica),
+    idMedico int not null foreign key references Medicos(idMedico),
+    primary key (idClinica, idMedico)
+)
+GO
+
+ALTER TABLE CitaMedica
+ADD idSeguroSalud int null foreign key references SeguroSalud(idSeguroSalud);
