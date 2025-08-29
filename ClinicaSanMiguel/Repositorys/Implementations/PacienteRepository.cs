@@ -15,39 +15,6 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             _conexion = configuration.GetConnectionString("stringConexion")!;
         }
 
-        public async Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request)
-        {
-            var response = new GeneralResponseDto();
-
-            await using (SqlConnection con = new SqlConnection(_conexion))
-            await using (SqlCommand cmd = new SqlCommand("RegistroParienteSP", con))
-            { 
-                cmd.CommandType = CommandType.StoredProcedure; 
-                cmd.Parameters.AddWithValue("@idPaciente", request.idPaciente); 
-                cmd.Parameters.AddWithValue("@idTipoParentesco", request.idTipoParentesco);
-                cmd.Parameters.AddWithValue("@idTipoDocumento", request.idTipoDocumento);
-                cmd.Parameters.AddWithValue("@documento", request.documento); 
-                cmd.Parameters.AddWithValue("@apellidoPaterno", request.apellidoPaterno);
-                cmd.Parameters.AddWithValue("@apellidoMaterno", request.apellidoMaterno);
-                cmd.Parameters.AddWithValue("@nombres", request.nombres); 
-                cmd.Parameters.AddWithValue("@fechaNacimiento", request.fechaNacimiento);
-                cmd.Parameters.AddWithValue("@celular", request.celular);
-                cmd.Parameters.AddWithValue("@correo", request.correo); 
-                
-                await con.OpenAsync();
-                
-                using (var reader = await cmd.ExecuteReaderAsync()) 
-                { 
-                    if (await reader.ReadAsync()) 
-                    { 
-                        response.Resultado = reader.GetInt32(reader.GetOrdinal("Resultado"));
-                        response.Mensaje = reader.GetString(reader.GetOrdinal("Mensaje")); 
-                    } 
-                } 
-            }
-            return response;
-        }
-
         public async Task<GeneralResponseDto> LoginAsync(LoginRequestDto request)
         {
             var response = new GeneralResponseDto();
@@ -141,9 +108,37 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             return response;
         }
 
-        public Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request)
+        public async Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request)
         {
-            throw new NotImplementedException();
+            var response = new GeneralResponseDto();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+                await using (SqlCommand command = new SqlCommand("RegistroParienteSP", conexion))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@idPaciente", request.idPaciente);
+                    command.Parameters.AddWithValue("@idTipoParentesco", request.idTipoParentesco);
+                    command.Parameters.AddWithValue("@idTipoDocumento", request.idTipoDocumento);
+                    command.Parameters.AddWithValue("@documento", request.documento);
+                    command.Parameters.AddWithValue("@apellidoPaterno", request.apellidoPaterno);
+                    command.Parameters.AddWithValue("@apellidoMaterno", request.apellidoMaterno);
+                    command.Parameters.AddWithValue("@nombres", request.nombres);
+                    command.Parameters.AddWithValue("@fechaNacimiento", request.fechaNacimiento);
+                    command.Parameters.AddWithValue("@celular", request.celular);
+                    command.Parameters.AddWithValue("@correo", request.correo);
+
+                    await conexion.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            response.Resultado = reader.GetInt32(reader.GetOrdinal("Resultado"));
+                            response.Mensaje = reader.GetString(reader.GetOrdinal("Mensaje"));
+                        }
+                    }
+                }
+            return response;
         }
     }
 }
