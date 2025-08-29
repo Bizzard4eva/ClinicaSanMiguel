@@ -1,6 +1,47 @@
 Use DBSanMiguel
 GO
 
+CREATE OR ALTER PROCEDURE InicioSesionSP
+    @idTipoDocumento INT,
+    @documento VARCHAR(20),
+    @password VARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @idPaciente INT;
+
+    SELECT @idPaciente = idPaciente
+    FROM Pacientes
+    WHERE idTipoDocumento = @idTipoDocumento
+      AND documento = @documento;
+
+    IF @idPaciente IS NULL
+    BEGIN
+        -- Usuario no encontrado
+        SELECT 0 AS Resultado, 'Usuario no encontrado' AS Mensaje;
+        RETURN;
+    END
+
+    IF EXISTS (
+        SELECT 1
+        FROM Pacientes
+        WHERE idPaciente = @idPaciente
+          AND password = @password
+    )
+    BEGIN
+        -- Login exitoso, retornamos el idPaciente
+        SELECT @idPaciente AS Resultado, 'Login exitoso' AS Mensaje;
+    END
+    ELSE
+    BEGIN
+        -- Contraseña incorrecta
+        SELECT -1 AS Resultado, 'Contraseña incorrecta' AS Mensaje;
+    END
+END
+GO
+
+
 -- Registro de Paciente
 CREATE OR ALTER PROCEDURE RegistroPacienteSP
     @nombres VARCHAR(50),

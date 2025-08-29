@@ -105,6 +105,8 @@ Create Table CitaMedica(
     precio decimal(10,2) not null
 )
 GO
+ALTER TABLE CitaMedica
+ADD idSeguroSalud int null foreign key references SeguroSalud(idSeguroSalud);
 
 Create Table ClinicaMedico (
     idClinica int not null foreign key references Clinicas(idClinica),
@@ -113,5 +115,4 @@ Create Table ClinicaMedico (
 )
 GO
 
-ALTER TABLE CitaMedica
-ADD idSeguroSalud int null foreign key references SeguroSalud(idSeguroSalud);
+

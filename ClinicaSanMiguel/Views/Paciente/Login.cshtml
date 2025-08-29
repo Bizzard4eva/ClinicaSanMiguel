@@ -1,0 +1,40 @@
+﻿
+@{
+    @model ClinicaSanMiguel.DTOs.LoginRequestDto
+}
+
+<h2>Inicio de Sesión</h2>
+
+<form asp-action="Login" method="post">
+    <div>
+        <label for="IdTipoDocumento">Tipo Documento</label>
+        <select asp-for="IdTipoDocumento" class="form-control">
+            <option value="1">DNI</option>
+            <option value="2">Carnet de Extranjería</option>
+            <option value="3">Otro</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="Documento">Número de Documento</label>
+        <input asp-for="Documento" class="form-control" />
+    </div>
+
+    <div>
+        <label for="Password">Contraseña</label>
+        <input asp-for="Password" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+
