@@ -101,158 +101,105 @@ END
 GO
 
 -- 3. SP para la actualizacion de datos secundarios del Titular
+CREATE OR ALTER PROCEDURE ActualizarPerfilClinicoSP
+    @idPaciente INT,
+    @idGenero INT,
+    @peso DECIMAL(10,2),
+    @altura DECIMAL(10,2),
+    @idTipoSangre INT
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    -- Validar existencia del paciente
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM Pacientes 
+        WHERE idPaciente = @idPaciente
+    )
+    BEGIN
+        SELECT -1 AS Resultado, 'El paciente no existe' AS Mensaje;
+        RETURN;
+    END
 
----------------------------------------------
-----------------------------------------------
+    -- Actualizar los datos clínicos
+    UPDATE Pacientes
+    SET 
+        idGenero = @idGenero,
+        peso = @peso,
+        altura = @altura,
+        idTipoSangre = @idTipoSangre
+    WHERE idPaciente = @idPaciente;
 
--- 4. Registrar Pariente
-CREATE OR ALTER PROCEDURE RegistroParienteSP
-    @idPaciente        INT,            -- paciente titular que está logeado
-    @idTipoParentesco  INT,            -- relación (madre, padre, hijo, etc.)
-    @idTipoDocumento   INT,
-    @documento         VARCHAR(20),
-    @apellidoPaterno   VARCHAR(25),
-    @apellidoMaterno   VARCHAR(25),
-    @nombres           VARCHAR(50),
-    @fechaNacimiento   DATE = NULL,
-    @celular           VARCHAR(9) = NULL,
-    @correo            VARCHAR(50) = NULL
+    -- Retornar confirmación
+    SELECT 1 AS Resultado, 'Perfil clínico actualizado correctamente' AS Mensaje;
+END
+GO
+
+-- 4. SP para registrar a un familiar 
+
+CREATE OR ALTER PROCEDURE AgregarFamiliarSP
+    @idPacienteTitular INT,
+    @idTipoParentesco INT,
+    @idTipoDocumento INT,
+    @documento VARCHAR(20),
+    @apellidoPaterno VARCHAR(25),
+    @apellidoMaterno VARCHAR(25),
+    @nombres VARCHAR(50),
+    @fechaNacimiento DATE,
+    @celular VARCHAR(9),
+    @correo VARCHAR(50),
+    @idGenero INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
     DECLARE @idFamiliar INT;
 
-    -- 1. Validar que no exista ya un paciente con ese documento
+    -- 1. Validar existencia del titular
+    IF NOT EXISTS (
+        SELECT 1 FROM Pacientes WHERE idPaciente = @idPacienteTitular
+    )
+    BEGIN
+        SELECT -1 AS Resultado, 'El paciente titular no existe' AS Mensaje;
+        RETURN;
+    END
+
+    -- 2. Validar que el documento no esté duplicado
     IF EXISTS (
-        SELECT 1
+        SELECT 1 
         FROM Pacientes
         WHERE idTipoDocumento = @idTipoDocumento
           AND documento = @documento
     )
     BEGIN
-        RAISERROR('El familiar con este tipo y número de documento ya existe.', 16, 1);
+        SELECT -2 AS Resultado, 'Ya existe un paciente con ese documento' AS Mensaje;
         RETURN;
     END
 
-    -- 2. Insertar al familiar como paciente (pero titular = 0)
+    -- 3. Insertar al nuevo paciente (familiar)
     INSERT INTO Pacientes (
-        nombres,
-        apellidoPaterno,
-        apellidoMaterno,
-        fechaNacimiento,
-        celular,
-        correo,
-        idTipoDocumento,
-        documento,
-        titular
+        nombres, apellidoPaterno, apellidoMaterno,
+        fechaNacimiento, celular, correo,
+        documento, idTipoDocumento, idGenero, titular
     )
     VALUES (
-        @nombres,
-        @apellidoPaterno,
-        @apellidoMaterno,
-        @fechaNacimiento,
-        @celular,
-        @correo,
-        @idTipoDocumento,
-        @documento,
-        0
+        @nombres, @apellidoPaterno, @apellidoMaterno,
+        @fechaNacimiento, @celular, @correo,
+        @documento, @idTipoDocumento, @idGenero, 0
     );
 
     SET @idFamiliar = SCOPE_IDENTITY();
 
-    -- 3. Registrar el parentesco entre el paciente titular y el familiar
+    -- 4. Insertar la relación en PacientesParentesco
     INSERT INTO PacientesParentesco (
-        idPaciente,
-        idFamiliar,
-        idTipoParentesco
+        idPaciente, idFamiliar, idTipoParentesco
     )
     VALUES (
-        @idPaciente,
-        @idFamiliar,
-        @idTipoParentesco
+        @idPacienteTitular, @idFamiliar, @idTipoParentesco
     );
 
-    -- 4. Retornar el ID del nuevo familiar
-    SELECT @idFamiliar AS idFamiliar;
+    -- 5. Retornar confirmación
+    SELECT @idFamiliar AS Resultado, 'Familiar agregado correctamente' AS Mensaje;
 END
 GO
-
--- Reservar Cita Medica 
-
-CREATE OR ALTER PROCEDURE ReservaCitaMedicaSP
-    @idClinica   INT,
-    @idPaciente  INT,
-    @idMedico    INT,
-    @fecha       DATETIME,
-    @precio      DECIMAL(10,2),
-    @estado      VARCHAR(25) = 'Pendiente'   -- por defecto 'Pendiente'
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    -- Insertar la cita médica
-    INSERT INTO CitaMedica (
-        idClinica,
-        idPaciente,
-        idMedico,
-        fecha,
-        estado,
-        precio
-    )
-    VALUES (
-        @idClinica,
-        @idPaciente,
-        @idMedico,
-        @fecha,
-        @estado,
-        @precio
-    );
-
-    -- Retornar el ID de la cita recién creada
-    SELECT SCOPE_IDENTITY() AS idCitaMedica;
-END
-GO
-
--- ActualizarPerfilSP
-CREATE OR ALTER PROCEDURE ActualizarPerfilSP
-    @idPaciente    INT,
-    @idGenero      INT = NULL,
-    @peso          DECIMAL(10,2) = NULL,
-    @altura        DECIMAL(10,2) = NULL,
-    @idTipoSangre  INT = NULL
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    -- Validar que el paciente exista
-    IF NOT EXISTS (SELECT 1 FROM Pacientes WHERE idPaciente = @idPaciente)
-    BEGIN
-        RAISERROR('El paciente especificado no existe.', 16, 1);
-        RETURN;
-    END
-
-    -- Actualizar los datos médicos
-    UPDATE Pacientes
-    SET idGenero       = ISNULL(@idGenero, idGenero),
-        peso         = ISNULL(@peso, peso),
-        altura       = ISNULL(@altura, altura),
-        idTipoSangre = ISNULL(@idTipoSangre, idTipoSangre)
-    WHERE idPaciente = @idPaciente;
-
-    -- Retornar los datos ya actualizados
-    SELECT 
-        idPaciente,
-        nombres,
-        apellidoPaterno,
-        apellidoMaterno,
-        idGenero,
-        peso,
-        altura,
-        idTipoSangre
-    FROM Pacientes
-    WHERE idPaciente = @idPaciente;
-END
-GO
-

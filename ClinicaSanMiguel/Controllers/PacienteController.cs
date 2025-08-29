@@ -62,11 +62,32 @@ namespace ClinicaSanMiguel.Controllers
                 ViewBag.Error = resultado.Mensaje;
                 return View(request);
             }
-
         }
 
-
-
+        [HttpGet]
+        public IActionResult UpdateProfile()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+            var resultado = await _pacienteRepository.UpdateProfileAsync(request);
+            if (resultado.Resultado > 0)
+            {
+                TempData["Mensaje"] = "Registro Exitoso!";
+                return RedirectToAction("Index", "Home"); // TODO
+            }
+            else
+            {
+                ViewBag.Error = resultado.Mensaje;
+                return View(request);
+            }
+        }
 
 
 

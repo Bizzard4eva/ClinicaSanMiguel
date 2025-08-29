@@ -15,9 +15,9 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             _conexion = configuration.GetConnectionString("stringConexion")!;
         }
 
-        public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
+        public async Task<GeneralResponseDto> LoginAsync(LoginRequestDto request)
         {
-            var response = new LoginResponseDto();
+            var response = new GeneralResponseDto();
 
             await using (SqlConnection conexion = new SqlConnection(_conexion))
             
@@ -44,9 +44,9 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             return response;
         }
 
-        public async Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request)
+        public async Task<GeneralResponseDto> RegisterAsync(RegisterRequestDto request)
         {
-            var response = new LoginResponseDto();
+            var response = new GeneralResponseDto();
 
             await using (SqlConnection conexion = new SqlConnection(_conexion))
 
@@ -76,6 +76,35 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
                     }
                 }
 
+            return response;
+        }
+
+        public async Task<GeneralResponseDto> UpdateProfileAsync(UpdateProfileRequestDto request)
+        {
+            var response = new GeneralResponseDto();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+
+            await using (SqlCommand command = new SqlCommand("ActualizarPerfilSP", conexion))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@idPaciente", request.IdPaciente);
+                command.Parameters.AddWithValue("@idGenero", request.IdGenero);
+                command.Parameters.AddWithValue("@peso", request.Peso);
+                command.Parameters.AddWithValue("@altura", request.Altura);
+                command.Parameters.AddWithValue("@idTipoSangre", request.IdTipoSangre);
+
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        response.Resultado = reader.GetInt32(reader.GetOrdinal("Resultado"));
+                        response.Mensaje = reader.GetString(reader.GetOrdinal("Mensaje"));
+                    }
+                }
+            }
             return response;
         }
     }
