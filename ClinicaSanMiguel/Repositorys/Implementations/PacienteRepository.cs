@@ -15,6 +15,7 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             _conexion = configuration.GetConnectionString("stringConexion")!;
         }
 
+<<<<<<< HEAD
         public async Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request)
         {
             var response = new GeneralResponseDto();
@@ -49,6 +50,8 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             return response;
         }
 
+=======
+>>>>>>> cfde25f4a2ac663ea73ad9dd413d497aa389b4b3
         public async Task<GeneralResponseDto> LoginAsync(LoginRequestDto request)
         {
             var response = new GeneralResponseDto();
@@ -139,6 +142,39 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
                     }
                 }
             }
+            return response;
+        }
+
+        public async Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request)
+        {
+            var response = new GeneralResponseDto();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+                await using (SqlCommand command = new SqlCommand("RegistroParienteSP", conexion))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@idPaciente", request.idPaciente);
+                    command.Parameters.AddWithValue("@idTipoParentesco", request.idTipoParentesco);
+                    command.Parameters.AddWithValue("@idTipoDocumento", request.idTipoDocumento);
+                    command.Parameters.AddWithValue("@documento", request.documento);
+                    command.Parameters.AddWithValue("@apellidoPaterno", request.apellidoPaterno);
+                    command.Parameters.AddWithValue("@apellidoMaterno", request.apellidoMaterno);
+                    command.Parameters.AddWithValue("@nombres", request.nombres);
+                    command.Parameters.AddWithValue("@fechaNacimiento", request.fechaNacimiento);
+                    command.Parameters.AddWithValue("@celular", request.celular);
+                    command.Parameters.AddWithValue("@correo", request.correo);
+
+                    await conexion.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            response.Resultado = reader.GetInt32(reader.GetOrdinal("Resultado"));
+                            response.Mensaje = reader.GetString(reader.GetOrdinal("Mensaje"));
+                        }
+                    }
+                }
             return response;
         }
     }
