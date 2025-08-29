@@ -20,10 +20,10 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             var response = new GeneralResponseDto();
 
             await using (SqlConnection con = new SqlConnection(_conexion))
-            await using (SqlCommand cmd = new SqlCommand("RegistroParienteSP", con))
+            await using (SqlCommand cmd = new SqlCommand("AgregarFamiliarSP", con))
             { 
                 cmd.CommandType = CommandType.StoredProcedure; 
-                cmd.Parameters.AddWithValue("@idPaciente", request.idPaciente); 
+                cmd.Parameters.AddWithValue("@idPacienteTitular", request.idPacienteTitular); 
                 cmd.Parameters.AddWithValue("@idTipoParentesco", request.idTipoParentesco);
                 cmd.Parameters.AddWithValue("@idTipoDocumento", request.idTipoDocumento);
                 cmd.Parameters.AddWithValue("@documento", request.documento); 
@@ -33,7 +33,8 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
                 cmd.Parameters.AddWithValue("@fechaNacimiento", request.fechaNacimiento);
                 cmd.Parameters.AddWithValue("@celular", request.celular);
                 cmd.Parameters.AddWithValue("@correo", request.correo); 
-                
+                cmd.Parameters.AddWithValue("@idGenero", request.idGenero);
+
                 await con.OpenAsync();
                 
                 using (var reader = await cmd.ExecuteReaderAsync()) 
@@ -44,7 +45,7 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
                         response.Mensaje = reader.GetString(reader.GetOrdinal("Mensaje")); 
                     } 
                 } 
-            }
+            } 
             return response;
         }
 
