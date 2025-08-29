@@ -107,5 +107,10 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             }
             return response;
         }
+
+        public Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

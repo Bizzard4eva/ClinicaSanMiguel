@@ -1,7 +1,6 @@
 ﻿namespace ClinicaSanMiguel.DTOs
 {
-    public class AddFamiliarRequestDto
+    public class MedicalReserveRequestDto
     {
-        
     }
 }
