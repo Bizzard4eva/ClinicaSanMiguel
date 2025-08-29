@@ -2,14 +2,56 @@
     ViewData["Title"] = "Clínica San Miguel";
 }
 
-<!-- Banner principal -->
-<div class="bg-info text-white text-center p-5 mb-5">
-    <h1 class="display-4 fw-bold">Clínica San Miguel</h1>
-    <p class="lead">Siempre cerca de ti, cuando más nos necesitas</p>
-    <p><strong>Teléfonos:</strong> (01) 615-6767 / 920 014 570</p>
-    <p><strong>Dirección:</strong> Av. Belisario Suárez 998, San Juan de Miraflores</p>
-    <a href="#" class="btn btn-light btn-lg mt-3">Reserva tu cita</a>
-</div>
+<!-- Hero Section inspirado en 01.png -->
+<section class="hero-section">
+    <div class="container-fluid">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-md-6 hero-content">
+                <div class="welcome-card">
+                    <div class="logo-section mb-4">
+                        <div class="clinic-logo">
+                            <i class="fas fa-user-md clinic-icon"></i>
+                            <span class="clinic-name">SAN PABLO</span>
+                        </div>
+                    </div>
+                    
+                    <h1 class="welcome-title">Bienvenido al Portal</h1>
+                    <h2 class="portal-subtitle">Mi Vida San Pablo</h2>
+                    
+                    <p class="welcome-description">
+                        Con solo un clic puedes reservar y confirmar tu cita médica, 
+                        además de realizar el seguimiento y consultar los resultados 
+                        de todos los exámenes realizados.
+                    </p>
+                    
+                    <div class="action-buttons">
+                        <a asp-controller="Paciente" asp-action="Login" class="btn btn-primary btn-lg me-3">
+                            Ingresar
+                        </a>
+                        <a asp-controller="Paciente" asp-action="Register" class="btn btn-outline-primary btn-lg">
+                            Regístrate aquí
+                        </a>
+                    </div>
+                    
+                    <div class="info-note mt-4">
+                        <p class="small text-muted">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Cita Médica: Sin trámites de larga espera y seguridad de su afiliación biométrica. 
+                            El nuevo Servicio Digital de Citas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 hero-image">
+                <div class="doctor-image-container">
+                    <img src="https://images.pexels.com/photos/5207153/pexels-photo-5207153.jpeg" 
+                         alt="Doctor profesional" class="img-fluid doctor-image">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Carrusel de imágenes -->
 <div id="bannerCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
@@ -72,7 +114,7 @@
                 <div class="card-body">
                     <h4 class="text-primary">Reserva una cita</h4>
                     <p>Haz tu reserva a través de nuestro canal digital</p>
-                    <a class="btn btn-primary" href="#">Reservar</a>
+                    <a class="btn btn-primary" asp-controller="Paciente" asp-action="Login">Reservar</a>
                 </div>
             </div>
         </div>

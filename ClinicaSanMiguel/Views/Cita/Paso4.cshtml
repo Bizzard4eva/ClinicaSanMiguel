@@ -1,0 +1,235 @@
+@{
+    ViewData["Title"] = "Reservar Cita - Confirmación";
+}
+
+<!-- Paso 4: Confirmación de Cita - Inspirado en 10.png -->
+<section class="appointment-section">
+    <div class="container">
+        <!-- Header con navegación -->
+        <div class="appointment-header mb-4">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <div class="clinic-logo">
+                        <span class="clinic-name h5 text-primary">Clínica Santa Martha del Sur</span>
+                    </div>
+                    <div class="nav-menu">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Exámenes médicos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Tarjeta Salud San Pablo</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle btn btn-warning" href="#" role="button" data-bs-toggle="dropdown">
+                                    Selecciona tu sede
+                                </a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="#">Contáctanos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Mi perfil</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            @{
+                var pacienteSeleccionado = ViewBag.PacienteSeleccionado != null ? 
+                    ((ClinicaSanMiguel.Models.Paciente)ViewBag.PacienteSeleccionado).nombres : "Paciente";
+            }
+            <h1 class="text-primary">Reservar Cita - @pacienteSeleccionado - Clínica Santa Martha del Sur</h1>
+            <p class="text-muted">Puedes pagar el día de la cita o pagar en línea de manera segura e ir directamente al consultorio del médico. Además evitarás colas.</p>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container mb-5">
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Paso 1: Seleccione Paciente</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Paso 2: Seleccione Especialidad</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Paso 3: Seleccione Médico</span>
+                </div>
+                <div class="step active">
+                    <div class="step-circle">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <span class="step-label">Paso 4: Confirmación de Cita</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Datos de la cita -->
+            <div class="col-md-8">
+                <div class="appointment-summary-card">
+                    <h4 class="text-primary mb-4">DATOS DE TU CITA</h4>
+                    
+                    <div class="appointment-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Paciente</span>
+                            <span class="detail-value">
+                                @if(ViewBag.PacienteSeleccionado != null)
+                                {
+                                    var paciente = (ClinicaSanMiguel.Models.Paciente)ViewBag.PacienteSeleccionado;
+                                    @($"{paciente.nombres} {paciente.apellidoPaterno} {paciente.apellidoMaterno}")
+                                }
+                                else
+                                {
+                                    <text>No disponible</text>
+                                }
+                            </span>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <span class="detail-label">Especialidad</span>
+                            <span class="detail-value">
+                                @if(ViewBag.EspecialidadSeleccionada != null)
+                                {
+                                    var especialidad = (ClinicaSanMiguel.Models.Especialidad)ViewBag.EspecialidadSeleccionada;
+                                    @especialidad.especialidad.ToUpper()
+                                }
+                                else
+                                {
+                                    <text>No disponible</text>
+                                }
+                            </span>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <span class="detail-label">Médico</span>
+                            <span class="detail-value">
+                                @if(ViewBag.MedicoSeleccionado != null)
+                                {
+                                    var medico = (ClinicaSanMiguel.Models.Medico)ViewBag.MedicoSeleccionado;
+                                    @($"DR(A). {medico.apellidos.ToUpper()} {medico.nombres.ToUpper()}")
+                                }
+                                else
+                                {
+                                    <text>No disponible</text>
+                                }
+                            </span>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <span class="detail-label">Sede</span>
+                            <span class="detail-value">Clínica Santa Martha del Sur</span>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <span class="detail-label">Consultorio</span>
+                            <span class="detail-value">Consultorio 605</span>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <span class="detail-label">Día y Hora</span>
+                            <span class="detail-value">
+                                @if(ViewBag.FechaCita != null && ViewBag.HoraCita != null)
+                                {
+                                    var fecha = DateTime.Parse(ViewBag.FechaCita.ToString());
+                                    @($"{fecha:dd/MM/yyyy} a las {ViewBag.HoraCita}")
+                                }
+                                else
+                                {
+                                    <text>No disponible</text>
+                                }
+                            </span>
+                        </div>
+                        
+                        <div class="detail-row">
+                            <span class="detail-label">Modo de Atención</span>
+                            <span class="detail-value">
+                                @if(ViewBag.TieneSeguro == "true" && ViewBag.SeguroSeleccionado != null)
+                                {
+                                    var seguro = (ClinicaSanMiguel.Models.SeguroSalud)ViewBag.SeguroSeleccionado;
+                                    @seguro.nombreSeguro
+                                }
+                                else
+                                {
+                                    <text>Particular</text>
+                                }
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de pago -->
+            <div class="col-md-4">
+                <div class="payment-card">
+                    <div class="payment-header">
+                        <div class="credit-cards-icons">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="card-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="card-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Diners_Club_logo.svg" alt="Diners" class="card-icon">
+                        </div>
+                    </div>
+
+                    <div class="payment-content">
+                        <h5 class="payment-title">¡Paga en línea de manera fácil, rápida, segura y evita las colas!</h5>
+                        
+                        <p class="payment-description">
+                            Si tienes tarjeta de débito o crédito Visa, Mastercard o Diners, 
+                            puedes hacer la transferencia a través de nuestro sistema de pagos.
+                        </p>
+                        
+                        <p class="payment-help">
+                            Si tienes alguna duda puedes ubicarnos 
+                            <a href="#" class="payment-link">aquí</a>
+                        </p>
+
+                        <div class="price-section">
+                            <h3 class="price">Precio S/ 61.00</h3>
+                        </div>
+
+                        <div class="payment-buttons">
+                            <form asp-controller="Cita" asp-action="ConfirmarCita" method="post" class="mb-3">
+                                <input type="hidden" name="pagarAhora" value="true" />
+                                <button type="submit" class="btn btn-warning btn-lg w-100 mb-3">
+                                    Reserva y paga ahora
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción inferiores -->
+        <div class="bottom-actions mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <form asp-controller="Cita" asp-action="ConfirmarCita" method="post" class="d-inline">
+                        <input type="hidden" name="pagarAhora" value="false" />
+                        <button type="button" class="btn btn-outline-secondary me-3" onclick="history.back()">
+                            Regresar
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Reserva y paga el día de la cita
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Aquí puedes agregar validaciones adicionales o lógica de confirmación
+            console.log('Página de confirmación cargada');
+        });
+    </script>
+}

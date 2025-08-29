@@ -1,40 +1,133 @@
-﻿
+﻿@model ClinicaSanMiguel.DTOs.LoginRequestDto
+
 @{
-    @model ClinicaSanMiguel.DTOs.LoginRequestDto
+    ViewData["Title"] = "Iniciar Sesión - Mi Vida San Pablo";
 }
 
-<h2>Inicio de Sesión</h2>
+<!-- Login Section inspirado en 02.png -->
+<section class="login-section">
+    <div class="container-fluid">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-md-6 col-lg-5">
+                <div class="login-card">
+                    <!-- Logo y header -->
+                    <div class="text-center mb-4">
+                        <div class="clinic-logo mb-3">
+                            <i class="fas fa-user-md clinic-icon text-primary"></i>
+                            <span class="clinic-name h4 ms-2 text-primary">SAN PABLO</span>
+                        </div>
+                        <button class="btn btn-outline-primary mb-3">Inicio</button>
+                    </div>
 
-<form asp-action="Login" method="post">
-    <div>
-        <label for="IdTipoDocumento">Tipo Documento</label>
-        <select asp-for="IdTipoDocumento" class="form-control">
-            <option value="1">DNI</option>
-            <option value="2">Carnet de Extranjería</option>
-            <option value="3">Otro</option>
-        </select>
+                    <!-- Card de bienvenida -->
+                    <div class="welcome-card-login text-center mb-4">
+                        <h3 class="welcome-text">Bienvenido</h3>
+                        <p class="welcome-subtitle">
+                            Puedes reservar tus citas médicas el mismo día y<br>
+                            puedes pagarla tan sólo con un click.
+                        </p>
+
+                        <!-- Botones de tipo de documento -->
+                        <div class="document-type-buttons mb-3">
+                            <button type="button" class="btn btn-primary document-btn active" data-type="1">DNI</button>
+                            <button type="button" class="btn btn-outline-primary document-btn" data-type="2">Carnet extranjería</button>
+                            <button type="button" class="btn btn-outline-primary document-btn" data-type="3">Pasaporte</button>
+                        </div>
+
+                        <!-- Formulario de login -->
+                        <form asp-action="Login" method="post" class="login-form">
+                            <input asp-for="IdTipoDocumento" type="hidden" id="hiddenDocType" value="1" />
+                            
+                            <div class="form-group mb-3">
+                                <label class="form-label text-start w-100">Número de documento</label>
+                                <input asp-for="Documento" class="form-control" placeholder="72671009" maxlength="20" required />
+                                <span asp-validation-for="Documento" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label text-start w-100">Contraseña*</label>
+                                <div class="password-input-group">
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required />
+                                    <button type="button" class="btn password-toggle">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <!-- reCAPTCHA placeholder -->
+                            <div class="recaptcha-container mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="recaptchaCheck" required>
+                                    <label class="form-check-label" for="recaptchaCheck">
+                                        <i class="fas fa-check-circle text-success me-1"></i> No soy un robot
+                                    </label>
+                                </div>
+                                <small class="text-muted">reCAPTCHA - Powered by Google</small>
+                            </div>
+
+                            <div class="text-center mb-3">
+                                <a href="#" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
+                            </div>
+
+                            <button type="submit" class="btn btn-warning btn-lg w-100 login-submit">Ingresar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Imagen decorativa (opcional) -->
+            <div class="col-md-6 d-none d-md-block">
+                <div class="login-image-container text-center">
+                    <img src="https://images.pexels.com/photos/5207153/pexels-photo-5207153.jpeg" 
+                         alt="Doctor profesional" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div>
-        <label for="Documento">Número de Documento</label>
-        <input asp-for="Documento" class="form-control" />
-    </div>
-
-    <div>
-        <label for="Password">Contraseña</label>
-        <input asp-for="Password" type="password" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-</form>
-
+<!-- Mensajes de error y éxito -->
 @if (ViewBag.Error != null)
 {
-    <div class="alert alert-danger">@ViewBag.Error</div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.Error
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 }
 
 @if (TempData["Mensaje"] != null)
 {
-    <div class="alert alert-success">@TempData["Mensaje"]</div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Mensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Manejo de botones de tipo de documento
+            $('.document-btn').click(function() {
+                $('.document-btn').removeClass('active').addClass('btn-outline-primary').removeClass('btn-primary');
+                $(this).addClass('active').removeClass('btn-outline-primary').addClass('btn-primary');
+                $('#hiddenDocType').val($(this).data('type'));
+            });
+
+            // Toggle de contraseña
+            $('.password-toggle').click(function() {
+                const input = $(this).siblings('input');
+                const icon = $(this).find('i');
+                
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    input.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+        });
+    </script>
 }
 

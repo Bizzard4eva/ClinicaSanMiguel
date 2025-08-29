@@ -24,33 +24,395 @@ body {
 /* Index CSS*/
 
 
-/* Colores personalizados */
+/* Colores corporativos - ClÃ­nica San Miguel */
 :root {
-    --color-principal: #007bff; /* Azul base */
-    --color-secundario: #17a2b8; /* Celeste */
-    --color-acento: #ff6b6b; /* Rojo coral */
-    --color-verde: #28a745; /* Verde clínico */
-    --color-gris: #f4f4f4; /* Fondo claro */
+    --color-primary: #800080; /* Morado corporativo */
+    --color-secondary: #FF8C00; /* Naranja corporativo */
+    --color-accent: #6A4C93; /* Morado claro */
+    --color-light-purple: #E6E6FA; /* Lavanda */
+    --color-dark-gray: #333333; /* Gris oscuro */
+    --color-light-gray: #f8f9fa; /* Gris claro */
+    --color-white: #ffffff;
+    --color-success: #28a745;
+    --color-warning: #ffc107;
+    --color-danger: #dc3545;
 }
 
-/* Sobrescribir Bootstrap donde lo necesites */
-.bg-info {
-    background-color: var(--color-secundario) !important;
-}
-
+/* Bootstrap overrides */
 .text-primary {
-    color: var(--color-principal) !important;
+    color: var(--color-primary) !important;
 }
 
 .btn-primary {
-    background-color: var(--color-principal) !important;
-    border-color: var(--color-principal) !important;
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+}
+
+.btn-warning {
+    background-color: var(--color-secondary) !important;
+    border-color: var(--color-secondary) !important;
+    color: var(--color-white) !important;
+}
+
+.btn-warning:hover, .btn-warning:focus, .btn-warning:active {
+    background-color: #e07b00 !important;
+    border-color: #e07b00 !important;
+    color: var(--color-white) !important;
+}
+
+/* Appointment booking styles */
+.appointment-section {
+    padding: 2rem 0;
+}
+
+.clinic-name {
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+.progress-bar-container {
+    margin: 2rem 0;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e0e0e0;
+    z-index: 1;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.step-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.step.active .step-circle,
+.step.completed .step-circle {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.step-label {
+    font-size: 0.85rem;
+    color: var(--color-dark-gray);
+    max-width: 120px;
+}
+
+.step.active .step-label {
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+/* Patient selection styles */
+.patient-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.patient-card:hover {
+    border-color: var(--color-secondary);
+    background-color: #fff8f0;
+}
+
+.patient-card.selected {
+    border-color: var(--color-primary);
+    background-color: var(--color-light-purple);
+}
+
+.patient-icon {
+    font-size: 3rem;
+    color: var(--color-accent);
+    margin-right: 1rem;
+}
+
+.patient-info {
+    flex-grow: 1;
+}
+
+.patient-name {
+    color: var(--color-dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.selection-indicator {
+    font-size: 1.5rem;
+    color: var(--color-secondary);
+}
+
+/* Insurance and specialty selection */
+.insurance-btn {
+    border: 2px solid var(--color-secondary);
+    color: var(--color-secondary);
+    background-color: transparent;
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.insurance-btn.active,
+.insurance-btn:hover {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+/* Doctor selection styles */
+.doctor-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.doctor-card:hover {
+    border-color: var(--color-secondary);
+    background-color: #fff8f0;
+}
+
+.doctor-card.selected {
+    border-color: var(--color-primary);
+    background-color: var(--color-light-purple);
+}
+
+.doctor-avatar {
+    font-size: 2rem;
+    color: var(--color-accent);
+    margin-right: 1rem;
+}
+
+.doctor-name {
+    color: var(--color-dark-gray);
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.doctor-specialty {
+    color: var(--color-primary);
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+/* Calendar styles */
+.calendar-container {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.calendar-header {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-title {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.calendar-grid {
+    padding: 1rem;
+}
+
+.calendar-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.day-header {
+    text-align: center;
+    font-weight: bold;
+    color: var(--color-dark-gray);
+    padding: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.calendar-day.available {
+    border-color: #e0e0e0;
+    background-color: white;
+}
+
+.calendar-day.available:hover {
+    border-color: var(--color-secondary);
+    background-color: #fff8f0;
+}
+
+.calendar-day.selected {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.calendar-day.highlighted {
+    background-color: var(--color-light-purple);
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+/* Time slots */
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.5rem;
+}
+
+.time-slot {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.time-slot.selected {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+/* Confirmation page styles */
+.appointment-summary-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 2rem;
+    background-color: white;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: var(--color-dark-gray);
+}
+
+.detail-value {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.payment-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+.card-icon {
+    height: 30px;
+    margin: 0 0.5rem;
+}
+
+.price {
+    font-size: 2rem;
+    color: var(--color-primary);
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .progress-steps {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .progress-steps::before {
+        display: none;
+    }
+    
+    .step {
+        flex-direction: row;
+        text-align: left;
+        margin-bottom: 1rem;
+    }
+    
+    .step-circle {
+        margin-right: 1rem;
+        margin-bottom: 0;
+    }
+    
+    .patient-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .patient-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
 }
 
 
 
 .carousel-item img {
-    height: 400px; /* altura fija para todas las imágenes */
+    height: 400px; /* altura fija para todas las imï¿½genes */
     object-fit: cover; /* recorta para llenar sin deformar */
 }
 
@@ -61,4 +423,307 @@ body {
     object-fit: cover;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Landing page hero section */
+.hero-section {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--color-light-purple), var(--color-white));
+    padding: 2rem 0;
+}
+
+.hero-content {
+    padding: 2rem 0;
+}
+
+.welcome-card {
+    background: var(--color-white);
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    max-width: 500px;
+}
+
+.clinic-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.clinic-icon {
+    font-size: 3rem;
+    color: var(--color-primary);
+    margin-right: 1rem;
+}
+
+.clinic-name {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    letter-spacing: 2px;
+}
+
+.welcome-title {
+    color: var(--color-dark-gray);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.portal-subtitle {
+    color: var(--color-primary);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.welcome-description {
+    color: var(--color-dark-gray);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.action-buttons {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.action-buttons .btn {
+    font-size: 1.1rem;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0.5rem;
+}
+
+.info-note {
+    background-color: #f8f9fa;
+    border-left: 4px solid var(--color-secondary);
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.hero-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.doctor-image-container {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.doctor-image {
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    height: auto;
+}
+
+/* Services cards enhancement */
+.card {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Background sections */
+.bg-info {
+    background: linear-gradient(135deg, var(--color-secondary), #ff7700) !important;
+}
+
+/* Responsive hero section */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: auto;
+        padding: 1rem 0;
+    }
+    
+    .welcome-card {
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+    }
+    
+    .welcome-title {
+        font-size: 2rem;
+    }
+    
+    .portal-subtitle {
+        font-size: 1.5rem;
+    }
+    
+    .clinic-name {
+        font-size: 1.5rem;
+    }
+    
+    .action-buttons .btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}
+
+/* Login page styles */
+.login-section {
+    background: linear-gradient(135deg, var(--color-light-purple), var(--color-white));
+    min-height: 100vh;
+}
+
+.login-card {
+    background: var(--color-white);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.welcome-card-login {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 2rem 1.5rem;
+    border: 1px solid #e0e0e0;
+}
+
+.welcome-text {
+    color: var(--color-primary);
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.welcome-subtitle {
+    color: var(--color-dark-gray);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+
+.document-type-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.document-btn {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    flex: 1;
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.login-form .form-group {
+    text-align: left;
+}
+
+.form-label {
+    color: var(--color-dark-gray);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.password-input-group {
+    position: relative;
+    display: flex;
+}
+
+.password-input-group input {
+    padding-right: 50px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    border: none;
+    background: transparent;
+    color: var(--color-accent);
+    padding: 0 15px;
+    border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.password-toggle:hover {
+    color: var(--color-primary);
+    background-color: transparent;
+}
+
+.recaptcha-container {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 1rem;
+    text-align: left;
+}
+
+.forgot-password-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.forgot-password-link:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+}
+
+.login-submit {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.login-image-container {
+    padding: 2rem;
+}
+
+.login-image-container img {
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive login */
+@media (max-width: 768px) {
+    .login-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .welcome-card-login {
+        padding: 1.5rem 1rem;
+    }
+    
+    .document-type-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .document-btn {
+        max-width: 200px;
+        margin-bottom: 0.5rem;
+    }
 }

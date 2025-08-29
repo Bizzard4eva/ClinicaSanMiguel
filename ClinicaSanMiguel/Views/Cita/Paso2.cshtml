@@ -1,0 +1,198 @@
+@{
+    ViewData["Title"] = "Reservar Cita - Seleccione Especialidad";
+}
+
+<!-- Paso 2: Seleccione Especialidad - Inspirado en 04.png, 05.png, 06.png, 07.png -->
+<section class="appointment-section">
+    <div class="container">
+        <!-- Header con navegación -->
+        <div class="appointment-header mb-4">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <div class="clinic-logo">
+                        <span class="clinic-name h5 text-primary">Clínica Santa Martha del Sur</span>
+                    </div>
+                    <div class="nav-menu">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Exámenes médicos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Tarjeta Salud San Pablo</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle btn btn-warning" href="#" role="button" data-bs-toggle="dropdown">
+                                    Selecciona tu sede
+                                </a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="#">Contáctanos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Mi perfil</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            @{
+                var pacienteSeleccionado = ViewBag.PacienteSeleccionado != null ? 
+                    ((ClinicaSanMiguel.Models.Paciente)ViewBag.PacienteSeleccionado).nombres : "Paciente";
+            }
+            <h1 class="text-primary">Reservar Cita - @pacienteSeleccionado - Clínica Santa Martha del Sur</h1>
+            <p class="text-muted">Selecciona con qué tipo de seguro cuentas, en cuál de nuestras sedes y en qué especialidad deseas atenderte.</p>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container mb-5">
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Paso 1: Seleccione Paciente</span>
+                </div>
+                <div class="step active">
+                    <div class="step-circle">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <span class="step-label">Paso 2: Seleccione Especialidad</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <span class="step-label">Paso 3: Seleccione Médico</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Paso 4: Confirmación</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de selección -->
+        <div class="specialty-selection-container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form asp-controller="Cita" asp-action="Paso2" method="post" id="specialtyForm">
+                        
+                        <!-- Selección de seguro -->
+                        <div class="insurance-selection mb-4">
+                            <h4 class="text-center mb-3">¿Cuenta con seguro?</h4>
+                            <div class="insurance-options">
+                                <button type="button" class="btn insurance-btn active" data-insurance="true">
+                                    SÍ, CUENTO CON SEGURO
+                                </button>
+                                <button type="button" class="btn insurance-btn" data-insurance="false">
+                                    NO ESTOY ASEGURADO
+                                </button>
+                            </div>
+                            <input type="hidden" name="tieneSeguro" id="tieneSeguro" value="true" />
+                        </div>
+
+                        <!-- Selección de seguro específico -->
+                        <div class="insurance-provider-selection mb-4" id="insuranceProviderSection">
+                            <div class="form-group">
+                                <label class="form-label">Seleccione su seguro:</label>
+                                <select name="seguroId" id="seguroSelect" class="form-select">
+                                    <option value="">SELECCIONE</option>
+                                    @if(ViewBag.SegurosHalud != null)
+                                    {
+                                        @foreach(var seguro in (List<ClinicaSanMiguel.Models.SeguroSalud>)ViewBag.SegurosHalud)
+                                        {
+                                            <option value="@seguro.idSeguroSalud">@seguro.nombreSeguro</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Selección de especialidad -->
+                        <div class="specialty-selection mb-4">
+                            <div class="form-group">
+                                <label class="form-label">Elije tu Especialidad</label>
+                                <select name="especialidadId" class="form-select specialty-select" required>
+                                    <option value="">SELECCIONE</option>
+                                    @if(ViewBag.Especialidades != null)
+                                    {
+                                        @foreach(var especialidad in (List<ClinicaSanMiguel.Models.Especialidad>)ViewBag.Especialidades)
+                                        {
+                                            <option value="@especialidad.idEspecialidad" data-precio="@especialidad.precio">@especialidad.especialidad.ToUpper()</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div class="insurance-info mb-4" id="insuranceInfo" style="display: none;">
+                            <div class="alert alert-info">
+                                <p class="mb-0">* Este campo es obligatorio</p>
+                            </div>
+                        </div>
+
+                        <!-- Mostrar especialidad seleccionada -->
+                        <div class="selected-specialty mb-4" id="selectedSpecialty" style="display: none;">
+                            <div class="alert alert-warning">
+                                <h6>Especialidad seleccionada:</h6>
+                                <p id="specialtyName" class="mb-0"></p>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="action-buttons text-center mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-3" onclick="history.back()">
+                                Regresar
+                            </button>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                Continuar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Manejo de botones de seguro
+            $('.insurance-btn').click(function() {
+                $('.insurance-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                const hasInsurance = $(this).data('insurance');
+                $('#tieneSeguro').val(hasInsurance);
+                
+                if (hasInsurance) {
+                    $('#insuranceProviderSection').show();
+                    $('#insuranceInfo').show();
+                } else {
+                    $('#insuranceProviderSection').hide();
+                    $('#insuranceInfo').hide();
+                    $('#seguroSelect').val('');
+                }
+            });
+
+            // Mostrar especialidad seleccionada
+            $('.specialty-select').change(function() {
+                const selectedText = $(this).find('option:selected').text();
+                if (selectedText && selectedText !== 'SELECCIONE') {
+                    $('#specialtyName').text(selectedText);
+                    $('#selectedSpecialty').show();
+                } else {
+                    $('#selectedSpecialty').hide();
+                }
+            });
+
+            // Inicializar estado
+            const hasInsuranceInitial = $('#tieneSeguro').val() === 'true';
+            if (hasInsuranceInitial) {
+                $('#insuranceProviderSection').show();
+                $('#insuranceInfo').show();
+            }
+        });
+    </script>
+}

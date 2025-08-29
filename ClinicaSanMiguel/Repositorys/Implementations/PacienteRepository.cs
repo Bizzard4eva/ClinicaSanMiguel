@@ -20,10 +20,10 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             var response = new GeneralResponseDto();
 
             await using (SqlConnection con = new SqlConnection(_conexion))
-            await using (SqlCommand cmd = new SqlCommand("RegistroParienteSP", con))
+            await using (SqlCommand cmd = new SqlCommand("AgregarFamiliarSP", con))
             { 
                 cmd.CommandType = CommandType.StoredProcedure; 
-                cmd.Parameters.AddWithValue("@idPaciente", request.idPaciente); 
+                cmd.Parameters.AddWithValue("@idPacienteTitular", request.idPaciente); 
                 cmd.Parameters.AddWithValue("@idTipoParentesco", request.idTipoParentesco);
                 cmd.Parameters.AddWithValue("@idTipoDocumento", request.idTipoDocumento);
                 cmd.Parameters.AddWithValue("@documento", request.documento); 
@@ -32,7 +32,8 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
                 cmd.Parameters.AddWithValue("@nombres", request.nombres); 
                 cmd.Parameters.AddWithValue("@fechaNacimiento", request.fechaNacimiento);
                 cmd.Parameters.AddWithValue("@celular", request.celular);
-                cmd.Parameters.AddWithValue("@correo", request.correo); 
+                cmd.Parameters.AddWithValue("@correo", request.correo);
+                cmd.Parameters.AddWithValue("@idGenero", 1); // Valor por defecto 
                 
                 await con.OpenAsync();
                 
@@ -141,9 +142,5 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             return response;
         }
 
-        public Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

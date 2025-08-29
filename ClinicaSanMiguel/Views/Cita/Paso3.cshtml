@@ -1,0 +1,320 @@
+@{
+    ViewData["Title"] = "Reservar Cita - Seleccione Médico";
+}
+
+<!-- Paso 3: Seleccione Médico - Inspirado en 08.png, 09.png -->
+<section class="appointment-section">
+    <div class="container">
+        <!-- Header con navegación -->
+        <div class="appointment-header mb-4">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <div class="clinic-logo">
+                        <span class="clinic-name h5 text-primary">Clínica Santa Martha del Sur</span>
+                    </div>
+                    <div class="nav-menu">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Exámenes médicos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Tarjeta Salud San Pablo</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle btn btn-warning" href="#" role="button" data-bs-toggle="dropdown">
+                                    Selecciona tu sede
+                                </a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="#">Contáctanos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Mi perfil</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            @{
+                var pacienteSeleccionado = ViewBag.PacienteSeleccionado != null ? 
+                    ((ClinicaSanMiguel.Models.Paciente)ViewBag.PacienteSeleccionado).nombres : "Paciente";
+            }
+            <h1 class="text-primary">Reservar Cita - @pacienteSeleccionado - Clínica Santa Martha del Sur</h1>
+            <p class="text-muted">¡Es muy fácil! Puedes reservar tu cita buscando por médico o por fecha.</p>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container mb-5">
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Paso 1: Seleccione Paciente</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Paso 2: Seleccione Especialidad</span>
+                </div>
+                <div class="step active">
+                    <div class="step-circle">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <span class="step-label">Paso 3: Seleccione Médico</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Paso 4: Confirmación</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selección de médico -->
+        <div class="doctor-selection-container">
+            <div class="row">
+                <!-- Criterios de búsqueda -->
+                <div class="col-md-12 mb-4">
+                    <div class="search-criteria">
+                        <h4 class="text-primary mb-3">Seleccionar criterio de búsqueda</h4>
+                        <div class="search-options">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="search-field">
+                                        <input type="text" class="form-control" placeholder="Buscar por Médico" id="searchDoctor">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="search-field">
+                                        <input type="text" class="form-control" placeholder="Buscar por Fecha" id="searchDate">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de médicos y calendario -->
+                <div class="col-md-6">
+                    <!-- Botón de búsqueda -->
+                    <div class="search-button-container mb-4">
+                        <button class="btn btn-primary w-100 search-button">
+                            <i class="fas fa-search me-2"></i>
+                            BUSCAR MÉDICO
+                        </button>
+                    </div>
+
+                    <!-- Lista de médicos -->
+                    <div class="doctors-list">
+                        @if(ViewBag.Medicos != null)
+                        {
+                            @foreach(var medico in (List<ClinicaSanMiguel.Models.Medico>)ViewBag.Medicos)
+                            {
+                                <div class="doctor-card" data-doctor-id="@medico.idMedico">
+                                    <div class="doctor-avatar">
+                                        <i class="fas fa-user-md"></i>
+                                    </div>
+                                    <div class="doctor-info">
+                                        <h6 class="doctor-name">DR(A). @(medico.apellidos.ToUpper()) @(medico.nombres.ToUpper())</h6>
+                                        <p class="doctor-specialty">@medico.Especialidad?.especialidad</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                <p>No hay médicos disponibles para esta especialidad.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Calendario y horarios -->
+                <div class="col-md-6">
+                    <!-- Calendario -->
+                    <div class="calendar-container mb-4">
+                        <div class="calendar-header">
+                            <button class="btn btn-outline-primary btn-sm" id="prevMonth">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <h5 class="calendar-title" id="calendarTitle">SEPTIEMBRE 2025</h5>
+                            <button class="btn btn-outline-primary btn-sm" id="nextMonth">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <div class="calendar-grid">
+                            <div class="calendar-days-header">
+                                <div class="day-header">Do</div>
+                                <div class="day-header">Lu</div>
+                                <div class="day-header">Ma</div>
+                                <div class="day-header">Mi</div>
+                                <div class="day-header">Ju</div>
+                                <div class="day-header">Vi</div>
+                                <div class="day-header">Sa</div>
+                            </div>
+                            <div class="calendar-days" id="calendarDays">
+                                <!-- Los días se generarán con JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Médico seleccionado y horarios -->
+                    <div class="selected-doctor-container" id="selectedDoctorContainer" style="display: none;">
+                        <div class="selected-doctor-info">
+                            <div class="doctor-avatar-large">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="doctor-details">
+                                <h5 id="selectedDoctorName">DR(A). REINA ABRIGO RAUL JESUS</h5>
+                                <p class="doctor-specialty-large">Dermatología</p>
+                            </div>
+                        </div>
+
+                        <!-- Horarios disponibles -->
+                        <div class="time-slots-container mt-4">
+                            <h6 class="mb-3">Horarios disponibles:</h6>
+                            <div class="time-slots-grid">
+                                <button type="button" class="btn btn-outline-primary time-slot" data-time="09:00">09:00</button>
+                                <button type="button" class="btn btn-outline-primary time-slot" data-time="09:10">09:10</button>
+                                <button type="button" class="btn btn-outline-primary time-slot" data-time="09:20">09:20</button>
+                                <button type="button" class="btn btn-outline-primary time-slot" data-time="09:30">09:30</button>
+                                <button type="button" class="btn btn-outline-primary time-slot" data-time="09:40">09:40</button>
+                                <button type="button" class="btn btn-outline-primary time-slot" data-time="09:50">09:50</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de envío -->
+            <form asp-controller="Cita" asp-action="Paso3" method="post" id="doctorForm" style="display: none;">
+                <input type="hidden" name="medicoId" id="selectedDoctorId" />
+                <input type="hidden" name="fechaCita" id="selectedDate" />
+                <input type="hidden" name="horaCita" id="selectedTime" />
+
+                <!-- Botones de acción -->
+                <div class="action-buttons text-center mt-5">
+                    <button type="button" class="btn btn-outline-secondary me-3" onclick="history.back()">
+                        Regresar
+                    </button>
+                    <button type="submit" class="btn btn-warning btn-lg">
+                        Continuar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        let currentMonth = 8; // Septiembre (0-indexed)
+        let currentYear = 2025;
+        let selectedDoctorId = null;
+        let selectedDate = null;
+        let selectedTime = null;
+
+        $(document).ready(function() {
+            generateCalendar();
+
+            // Selección de médico
+            $('.doctor-card').click(function() {
+                $('.doctor-card').removeClass('selected');
+                $(this).addClass('selected');
+                
+                selectedDoctorId = $(this).data('doctor-id');
+                const doctorName = $(this).find('.doctor-name').text();
+                
+                $('#selectedDoctorName').text(doctorName);
+                $('#selectedDoctorId').val(selectedDoctorId);
+                $('#selectedDoctorContainer').show();
+                
+                checkFormCompletion();
+            });
+
+            // Selección de fecha en calendario
+            $(document).on('click', '.calendar-day.available', function() {
+                $('.calendar-day').removeClass('selected');
+                $(this).addClass('selected');
+                
+                selectedDate = $(this).data('date');
+                $('#selectedDate').val(selectedDate);
+                
+                checkFormCompletion();
+            });
+
+            // Selección de horario
+            $('.time-slot').click(function() {
+                $('.time-slot').removeClass('selected btn-primary').addClass('btn-outline-primary');
+                $(this).removeClass('btn-outline-primary').addClass('btn-primary selected');
+                
+                selectedTime = $(this).data('time');
+                $('#selectedTime').val(selectedTime + ':00');
+                
+                checkFormCompletion();
+            });
+
+            // Navegación del calendario
+            $('#prevMonth').click(function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                generateCalendar();
+            });
+
+            $('#nextMonth').click(function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                generateCalendar();
+            });
+        });
+
+        function generateCalendar() {
+            const months = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO',
+                           'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+            
+            $('#calendarTitle').text(months[currentMonth] + ' ' + currentYear);
+            
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const startingDayOfWeek = firstDay.getDay();
+            const daysInMonth = lastDay.getDate();
+            
+            let calendarHTML = '';
+            
+            // Días vacíos del mes anterior
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+            
+            // Días del mes actual
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isAvailable = day >= 1 && day <= 30; // Simplificado para demo
+                const isHighlighted = [1, 8, 10, 15, 17, 22, 24, 26, 27, 29].includes(day);
+                
+                let dayClass = 'calendar-day';
+                if (isAvailable) dayClass += ' available';
+                if (isHighlighted) dayClass += ' highlighted';
+                
+                const dateValue = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                calendarHTML += `<div class="${dayClass}" data-date="${dateValue}">${day}</div>`;
+            }
+            
+            $('#calendarDays').html(calendarHTML);
+        }
+
+        function checkFormCompletion() {
+            if (selectedDoctorId && selectedDate && selectedTime) {
+                $('#doctorForm').show();
+            }
+        }
+    </script>
+}
