@@ -6,6 +6,6 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
     public interface IPacienteRepository
     {
         Task<LoginResponseDto> LoginAsync(LoginRequestDto request);
-
+        Task<LoginResponseDto> RegisterAsync(RegisterRequestDto request);
     }
 }

@@ -1,0 +1,91 @@
+﻿
+@{
+    @model ClinicaSanMiguel.DTOs.RegisterRequestDto
+    ViewData["Title"] = "Registro de Paciente";
+}
+
+<h2>Registro de Paciente</h2>
+
+<form asp-action="Register" method="post">
+    <div>
+        <label>Tipo de Documento</label>
+        <select asp-for="IdTipoDocumento" class="form-control">
+            <option value="1">DNI</option>
+            <option value="2">Carnet de Extranjería</option>
+            <option value="3">Pasaporte</option>
+        </select>
+    </div>
+
+    <div>
+        <label>Número de Documento</label>
+        <input asp-for="Documento" class="form-control" />
+    </div>
+
+    <div>
+        <label>Nombres</label>
+        <input asp-for="Nombres" class="form-control" />
+    </div>
+
+    <div>
+        <label>Apellido Paterno</label>
+        <input asp-for="ApellidoPaterno" class="form-control" />
+    </div>
+
+    <div>
+        <label>Apellido Materno</label>
+        <input asp-for="ApellidoMaterno" class="form-control" />
+    </div>
+
+    <div>
+        <label>Fecha de Nacimiento</label>
+        <input asp-for="FechaNacimiento" type="date" class="form-control" />
+    </div>
+
+    <div>
+        <label>Celular</label>
+        <input asp-for="Celular" class="form-control" />
+    </div>
+
+    <div>
+        <label>Correo</label>
+        <input asp-for="Correo" type="email" class="form-control" />
+    </div>
+
+    <div>
+        <label>Género</label><br />
+        <input type="radio" asp-for="IdGenero" value="1" /> Masculino
+        <input type="radio" asp-for="IdGenero" value="2" /> Femenino
+    </div>
+
+    <div>
+        <label>Contraseña</label>
+        <input asp-for="Password" type="password" class="form-control" id="password" />
+    </div>
+
+    <div>
+        <label>Confirmar Contraseña</label>
+        <input type="password" class="form-control" id="confirmPassword" />
+    </div>
+
+    <div id="errorPassword" style="color:red; display:none;">
+        Las contraseñas no coinciden.
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">Registrar</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelector("form").addEventListener("submit", function (e) {
+            var pass = document.getElementById("password").value;
+            var confirm = document.getElementById("confirmPassword").value;
+
+            if (pass !== confirm) {
+                e.preventDefault(); // evita que se envíe el form
+                document.getElementById("errorPassword").style.display = "block";
+            }
+        });
+    </script>
+}

@@ -30,7 +30,7 @@ namespace ClinicaSanMiguel.Controllers
             if(resultado.Resultado > 0)
             {
                 TempData["Mensaje"] = "Bienvenido!";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home"); // TODO
             }
             else
             {
@@ -39,6 +39,31 @@ namespace ClinicaSanMiguel.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterRequestDto request) 
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(request);
+            }
+            var resultado = await _pacienteRepository.RegisterAsync(request);
+            if(resultado.Resultado > 0)
+            {
+                TempData["Mensaje"] = "Registro Exitoso!";
+                return RedirectToAction("Index", "Home"); // TODO
+            }
+            else
+            {
+                ViewBag.Error = resultado.Mensaje;
+                return View(request);
+            }
+
+        }
 
 
 

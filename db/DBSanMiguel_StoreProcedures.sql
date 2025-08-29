@@ -1,6 +1,6 @@
 Use DBSanMiguel
 GO
-
+-- 1. SP para el inicio de Sesion.
 CREATE OR ALTER PROCEDURE InicioSesionSP
     @idTipoDocumento INT,
     @documento VARCHAR(20),
@@ -42,37 +42,71 @@ END
 GO
 
 
--- Registro de Paciente
+-- 2. SP para el registro de un nuevo Paciente.
 CREATE OR ALTER PROCEDURE RegistroPacienteSP
+    @idTipoDocumento INT,
+    @documento VARCHAR(20),
     @nombres VARCHAR(50),
     @apellidoPaterno VARCHAR(25),
     @apellidoMaterno VARCHAR(25),
-	@celular VARCHAR(9),
-	@correo VARCHAR(50),
-	@fechaNacimiento DATE = NULL,
-    @idTipoDocumento INT,
-    @documento VARCHAR(20),
+    @fechaNacimiento DATE,
+    @celular VARCHAR(9),
+    @idGenero INT,
+    @correo VARCHAR(50),
     @password VARCHAR(50)
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    IF EXISTS (SELECT 1 FROM Pacientes WHERE idTipoDocumento = @idTipoDocumento 
-			                           AND documento = @documento)
+    -- Validar duplicado por tipoDocumento + documento
+    IF EXISTS (
+        SELECT 1 
+        FROM Pacientes
+        WHERE idTipoDocumento = @idTipoDocumento
+          AND documento = @documento
+    )
     BEGIN
-        RAISERROR('El paciente con este tipo y número de documento ya existe.', 16, 1);
+        SELECT -1 AS Resultado, 'Ya existe un paciente con ese documento' AS Mensaje;
         RETURN;
     END
 
-    INSERT INTO Pacientes (nombres, apellidoPaterno, apellidoMaterno, celular, correo, fechaNacimiento,
-							idTipoDocumento, documento, password, titular)
-    VALUES (@nombres, @apellidoPaterno, @apellidoMaterno, @celular, @correo, @fechaNacimiento,
-								@idTipoDocumento, @documento, @password, 1);
-    SELECT SCOPE_IDENTITY() AS idPaciente;
+    -- Validar duplicado por correo (si lo quieres único)
+    IF @correo IS NOT NULL AND EXISTS (
+        SELECT 1 
+        FROM Pacientes
+        WHERE correo = @correo
+    )
+    BEGIN
+        SELECT -2 AS Resultado, 'El correo ya está en uso' AS Mensaje;
+        RETURN;
+    END
+
+    -- Insertar nuevo paciente
+    INSERT INTO Pacientes (
+        nombres, apellidoPaterno, apellidoMaterno,
+        fechaNacimiento, celular, correo,
+        documento, password, idTipoDocumento, idGenero
+    )
+    VALUES (
+        @nombres, @apellidoPaterno, @apellidoMaterno,
+        @fechaNacimiento, @celular, @correo,
+        @documento, @password, @idTipoDocumento, @idGenero
+    );
+
+    -- Retornar el id del paciente recién creado
+    DECLARE @idPaciente INT = SCOPE_IDENTITY();
+
+    SELECT @idPaciente AS Resultado, 'Registro exitoso' AS Mensaje;
 END
 GO
 
--- Registrar Pariente
+-- 3. SP para la actualizacion de datos secundarios del Titular
+
+
+---------------------------------------------
+----------------------------------------------
+
+-- 4. Registrar Pariente
 CREATE OR ALTER PROCEDURE RegistroParienteSP
     @idPaciente        INT,            -- paciente titular que está logeado
     @idTipoParentesco  INT,            -- relación (madre, padre, hijo, etc.)
