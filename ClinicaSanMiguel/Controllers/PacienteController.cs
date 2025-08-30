@@ -73,7 +73,7 @@ namespace ClinicaSanMiguel.Controllers
             var profile = await _pacienteRepository.LoadingProfileAsync(idPaciente.Value);
             return View(profile);
         }
-  
+ 
 
         [HttpGet]
         public IActionResult AddFamiliar(int idPacienteTitular)
