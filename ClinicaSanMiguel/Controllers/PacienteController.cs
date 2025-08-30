@@ -29,6 +29,7 @@ namespace ClinicaSanMiguel.Controllers
             var resultado = await _pacienteRepository.LoginAsync(request);
             if(resultado.Resultado > 0)
             {
+                HttpContext.Session.SetInt32("IdPaciente", resultado.Resultado);
                 TempData["Mensaje"] = "Bienvenido!";
                 return RedirectToAction("Index", "Home"); // TODO
             }
