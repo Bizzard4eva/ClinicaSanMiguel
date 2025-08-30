@@ -19,6 +19,11 @@ namespace ClinicaSanMiguel.Controllers
         }
         [HttpPost]
 
+
+
+
+
+
         public IActionResult Index()
         {
             return View();
