@@ -123,12 +123,9 @@ namespace ClinicaSanMiguel.Controllers
             }
         }
 
-
-
-
-
         public IActionResult Index()
         {
+            // TODO
             return View();
         }
     }
