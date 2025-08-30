@@ -2,7 +2,6 @@
 using ClinicaSanMiguel.Repositorys.Interfaces;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using Microsoft.Data.Sql;
 
 namespace ClinicaSanMiguel.Repositorys.Implementations
 {

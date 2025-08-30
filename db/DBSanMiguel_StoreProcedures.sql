@@ -137,7 +137,6 @@ END
 GO
 
 -- 4. SP para registrar a un familiar 
-
 CREATE OR ALTER PROCEDURE AgregarFamiliarSP
     @idPacienteTitular INT,
     @idTipoParentesco INT,
@@ -156,7 +155,7 @@ BEGIN
 
     DECLARE @idFamiliar INT;
 
-    -- 1. Validar existencia del titular
+    -- Validar existencia del titular
     IF NOT EXISTS (
         SELECT 1 FROM Pacientes WHERE idPaciente = @idPacienteTitular
     )
@@ -165,7 +164,7 @@ BEGIN
         RETURN;
     END
 
-    -- 2. Validar que el documento no esté duplicado
+    -- Validar que el documento no esté duplicado
     IF EXISTS (
         SELECT 1 
         FROM Pacientes
@@ -177,7 +176,7 @@ BEGIN
         RETURN;
     END
 
-    -- 3. Insertar al nuevo paciente (familiar)
+    -- Insertar al nuevo paciente (familiar)
     INSERT INTO Pacientes (
         nombres, apellidoPaterno, apellidoMaterno,
         fechaNacimiento, celular, correo,
@@ -191,7 +190,7 @@ BEGIN
 
     SET @idFamiliar = SCOPE_IDENTITY();
 
-    -- 4. Insertar la relación en PacientesParentesco
+    --  Insertar la relación en PacientesParentesco
     INSERT INTO PacientesParentesco (
         idPaciente, idFamiliar, idTipoParentesco
     )
@@ -199,9 +198,93 @@ BEGIN
         @idPacienteTitular, @idFamiliar, @idTipoParentesco
     );
 
-    -- 5. Retornar confirmación
+    -- Retornar confirmación
     SELECT @idFamiliar AS Resultado, 'Familiar agregado correctamente' AS Mensaje;
 END
 GO
 
---
+-- 5. SP para registrar la Cita Medica
+CREATE OR ALTER PROCEDURE ReservarCitaMedicaSP
+    @idPaciente INT,
+    @idClinica INT,
+    @idMedico INT,
+    @fecha DATETIME,
+    @idSeguroSalud INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @precioEspecialidad DECIMAL(10,2);
+    DECLARE @cobertura INT;
+    DECLARE @precioFinal DECIMAL(10,2);
+    DECLARE @idCitaMedica INT;
+
+    -- Obtener precio de la especialidad del médico
+    SELECT @precioEspecialidad = E.precio
+    FROM 
+	Medicos M
+    INNER JOIN 
+	Especialidades E 
+	ON M.idEspecialidad = E.idEspecialidad
+    WHERE M.idMedico = @idMedico;
+
+    -- Obtener cobertura del seguro
+    SELECT @cobertura = cobertura
+    FROM SeguroSalud
+    WHERE idSeguroSalud = @idSeguroSalud;
+
+    -- Calcular precio final
+    SET @precioFinal = @precioEspecialidad * (100 - @cobertura) / 100.0;
+
+    --  Insertar la cita médica
+    INSERT INTO CitaMedica (
+        idClinica, idPaciente, idMedico, fecha, idSeguroSalud, precio
+    )
+    VALUES (
+        @idClinica, @idPaciente, @idMedico, @fecha, @idSeguroSalud, @precioFinal
+    );
+
+    SET @idCitaMedica = SCOPE_IDENTITY();
+
+    -- Retornar éxito
+    SELECT @idCitaMedica AS Resultado, 'Cita médica reservada correctamente' AS Mensaje;
+END
+GO
+
+-- 6. SP para visualizar los detalles de la CitaMedica
+CREATE OR ALTER PROCEDURE DetallesCitaMedicaSP
+    @idCitaMedica INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        -- Paciente
+        P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno AS paciente,
+
+        -- Especialidad
+        E.especialidad,
+
+        -- Médico
+        M.nombres + ' ' + M.apellidos AS medico,
+
+        -- Clínica
+        C.nombre AS clinica,
+
+        -- Fecha y hora de la cita
+        CM.fecha AS fechaHora,
+
+        -- Seguro de salud
+        S.nombreSeguro AS modoAtencion,
+
+        -- Precio final calculado y guardado
+        CM.precio
+    FROM CitaMedica CM
+    INNER JOIN Pacientes P ON CM.idPaciente = P.idPaciente
+    INNER JOIN Medicos M ON CM.idMedico = M.idMedico
+    INNER JOIN Especialidades E ON M.idEspecialidad = E.idEspecialidad
+    INNER JOIN Clinicas C ON CM.idClinica = C.idClinica
+    INNER JOIN SeguroSalud S ON CM.idSeguroSalud = S.idSeguroSalud
+    WHERE CM.idCitaMedica = @idCitaMedica;
+END
+GO
