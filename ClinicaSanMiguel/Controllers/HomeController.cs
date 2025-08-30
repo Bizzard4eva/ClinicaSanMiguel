@@ -18,6 +18,12 @@ namespace ClinicaSanMiguel.Controllers
             return View();
         }
 
+        public IActionResult SelectLoginRegister()
+        {
+            return View();
+        }
+
+
         public IActionResult Privacy()
         {
             return View();
