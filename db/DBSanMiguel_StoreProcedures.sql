@@ -339,3 +339,31 @@ BEGIN
     WHERE PP.idPaciente = @idPaciente;
 END
 GO
+
+
+-- 9. Cargar perfil por Id Paciente
+CREATE OR ALTER PROCEDURE CargarPerfilSP
+    @idPaciente INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        P.idPaciente,
+        (P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno) AS Nombre,
+        G.genero AS Genero,
+        DATEDIFF(YEAR, P.fechaNacimiento, GETDATE()) 
+            - CASE 
+                WHEN (MONTH(P.fechaNacimiento) > MONTH(GETDATE())) 
+                     OR (MONTH(P.fechaNacimiento) = MONTH(GETDATE()) AND DAY(P.fechaNacimiento) > DAY(GETDATE())) 
+                THEN 1 ELSE 0 
+              END AS Edad,
+        P.peso AS Peso,
+        P.altura AS Altura,
+        TS.tipoSangre AS GrupoSanguineo
+    FROM Pacientes P
+    INNER JOIN Generos G ON P.idGenero = G.idGenero
+    LEFT JOIN TipoSangre TS ON P.idTipoSangre = TS.idTipoSangre
+    WHERE P.idPaciente = @idPaciente;
+END
+GO
