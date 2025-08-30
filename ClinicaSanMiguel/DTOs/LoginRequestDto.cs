@@ -1,4 +1,6 @@
-﻿namespace ClinicaSanMiguel.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ClinicaSanMiguel.DTOs
 {
     public class LoginRequestDto
     {

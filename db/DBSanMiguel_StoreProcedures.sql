@@ -252,6 +252,7 @@ END
 GO
 
 -- 6. SP para visualizar los detalles de la CitaMedica
+
 CREATE OR ALTER PROCEDURE DetallesCitaMedicaSP
     @idCitaMedica INT
 AS
@@ -260,25 +261,25 @@ BEGIN
 
     SELECT 
         -- Paciente
-        P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno AS paciente,
+        P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno AS Paciente,
 
         -- Especialidad
-        E.especialidad,
+        E.especialidad AS Especialidad,
 
         -- Médico
-        M.nombres + ' ' + M.apellidos AS medico,
+        M.nombres + ' ' + M.apellidos AS Medico,
 
         -- Clínica
-        C.nombre AS clinica,
+        C.nombre AS Clinica,
 
         -- Fecha y hora de la cita
-        CM.fecha AS fechaHora,
+        CM.fecha AS FechaHora,
 
         -- Seguro de salud
-        S.nombreSeguro AS modoAtencion,
+        S.nombreSeguro AS Seguro,
 
         -- Precio final calculado y guardado
-        CM.precio
+        CM.precio AS Precio
     FROM CitaMedica CM
     INNER JOIN Pacientes P ON CM.idPaciente = P.idPaciente
     INNER JOIN Medicos M ON CM.idMedico = M.idMedico
@@ -286,5 +287,26 @@ BEGIN
     INNER JOIN Clinicas C ON CM.idClinica = C.idClinica
     INNER JOIN SeguroSalud S ON CM.idSeguroSalud = S.idSeguroSalud
     WHERE CM.idCitaMedica = @idCitaMedica;
+END
+GO
+
+------------------------------
+------------------------------
+
+-- 7. SP para listar Medicos filtrado con Especialidad y Clinica
+CREATE PROCEDURE MedicosPorEspecialidadClinicaSP
+    @idClinica INT,
+	@idEspecialidad INT
+AS
+BEGIN
+    SELECT 
+        M.idMedico,
+        M.nombres + ' ' + M.apellidos AS nombre
+    FROM Medicos AS M
+    INNER JOIN Especialidades AS E ON M.idEspecialidad = E.idEspecialidad
+    INNER JOIN ClinicaMedico AS CM ON M.idMedico = CM.idMedico
+    INNER JOIN Clinicas AS C ON CM.idClinica = C.idClinica
+    WHERE M.idEspecialidad = @idEspecialidad
+      AND CM.idClinica = @idClinica;
 END
 GO
