@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Bienvenido al Portal - Clínica San Miguel";
+}
+
+<div class="text-center mt-5">
+    <h1 class="display-4">Bienvenido al Portal</h1>
+    <h2 class="text-primary">Clínica San Miguel</h2>
+    <p class="mt-3">
+        Somos la <strong>Red de Clínicas San Miguel</strong>, contamos con un staff médico especializado
+        y tecnología avanzada, con procesos de seguridad y calidad en la atención de cada paciente.
+    </p>
+
+    <div class="mt-4">
+        <a asp-controller="Paciente" asp-action="Login" class="btn btn-primary btn-lg m-2">Ingresar</a>
+        <a asp-controller="Paciente" asp-action="Register" class="btn btn-success btn-lg m-2">Registrarme</a>
+    </div>
+
+    <p class="mt-4 text-muted">
+        Con <strong>Mi Vida San Miguel</strong> podrás reservar, pagar y reprogramar tus citas
+        presenciales o teleconsultas de manera fácil y segura.
+    </p>
+</div>
