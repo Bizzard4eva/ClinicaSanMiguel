@@ -46,14 +46,14 @@ namespace ClinicaSanMiguel.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterRequestDto request) 
+        public async Task<IActionResult> Register(RegisterRequestDto request)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(request);
             }
             var resultado = await _pacienteRepository.RegisterAsync(request);
-            if(resultado.Resultado > 0)
+            if (resultado.Resultado > 0)
             {
                 TempData["Mensaje"] = "Registro Exitoso!";
                 return RedirectToAction("Index", "Home"); // TODO
@@ -64,6 +64,16 @@ namespace ClinicaSanMiguel.Controllers
                 return View(request);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
+            if (idPaciente  == null) return RedirectToAction("Login", "Paciente");
+            var profile = await _pacienteRepository.LoadingProfileAsync(idPaciente.Value);
+            return View(profile);
+        }
+  
 
         [HttpGet]
         public IActionResult AddFamiliar(int idPacienteTitular)
