@@ -6,16 +6,17 @@ go
 -- Insertanto datos en SP Regristro Paciente 
 
 EXEC RegistroPacienteSP
-@nombres = 'Natanael',
-@apellidoPaterno = 'Lopez',
-@apellidoMaterno = 'Diaz',
-@celular = '99999999',
-@correo = 'samuel.lopez@mail.com',
-@fechaNacimiento = '2000-12-02',
-@idTipoDocumento = 1,    -- Ej: DNI
-@documento = '78945612',
-@password = '3333';
-GO
+    @idTipoDocumento = 1,
+    @documento = '72671009',
+    @nombres = 'Abel',
+    @apellidoPaterno = 'Sulca',
+    @apellidoMaterno = 'Espinoza',
+    @fechaNacimiento = '1999-03-15',
+    @celular = '999111222',
+    @idGenero = 1, -- 2 = Femenino (ejemplo)
+    @correo = 'abel.sulca@example.com',
+    @password = '12345';
+
 
 select *
 from Pacientes
@@ -108,3 +109,8 @@ go
 
 -- Testear el listado paciente con familiar
 EXEC PacienteConFamiliaresSP @idPaciente = 2;
+GO
+
+-- Testear loading profile por Id
+EXEC CargarPerfilSP @idPaciente = 10;
+GO
