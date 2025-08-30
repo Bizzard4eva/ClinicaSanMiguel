@@ -77,9 +77,33 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             return response;
         }
 
-        public Task<List<Paciente>> PatientsForMedicalReserveAsync(int idPaciente)
+        public async Task<List<PatientRelativesDto>> PatientsForMedicalReserveAsync(int idPaciente)
         {
-            throw new NotImplementedException(); // TODO idPaciente, nombre, apllido paterno, apellido materno
+            var response = new List<PatientRelativesDto>();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("PacienteConFamiliaresSP", conexion))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@idPaciente", idPaciente);
+
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var paciente = new PatientRelativesDto
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("idPaciente")),
+                            Nombre = reader.GetString(reader.GetOrdinal("Nombre")),
+                            Parentesco = reader.GetString(reader.GetOrdinal("Parentesco"))
+                        };
+                        response.Add(paciente);
+                    }
+                }
+            }
+            return response;
         }
 
         public async Task<List<GeneralListResponseDto>> SpecialtiesAsync()
