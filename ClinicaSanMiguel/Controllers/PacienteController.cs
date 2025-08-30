@@ -65,6 +65,40 @@ namespace ClinicaSanMiguel.Controllers
         }
 
         [HttpGet]
+        public IActionResult AddFamiliar(int idPacienteTitular)
+        {
+            // Inicializas el modelo con el idPaciente titular
+            var model = new AddFamiliarRequestDto
+            {
+                idPacienteTitular = idPacienteTitular
+            };
+            return View(model); // <- Vista Create (AddFamiliar.cshtml)
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddFamiliar(AddFamiliarRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+
+            var resultado = await _pacienteRepository.AddFamiliarAsync(request);
+            if (resultado.Resultado > 0)
+            {
+                ViewBag.Mensaje = "Familiar agregado correctamente";
+                // Devuelves la misma vista limpia para poder ingresar otro familiar
+                return View(new AddFamiliarRequestDto { idPacienteTitular = request.idPacienteTitular });
+            }
+            else
+            {
+                ViewBag.Error = resultado.Mensaje;
+                return View(request);
+            }
+        }
+
+
+        [HttpGet]
         public IActionResult UpdateProfile()
         {
             return View();
