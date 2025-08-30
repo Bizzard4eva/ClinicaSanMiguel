@@ -23,18 +23,18 @@ go
 
 -- Insertanto datos en SP Regristro Parientes
 
-EXEC dbo.RegistroParienteSP
-    @idPaciente = 5,              
-    @idTipoParentesco = 1,
-    @idTipoDocumento = 1,
-    @documento = '67896785',
-    @apellidoPaterno = 'Lopez',
-    @apellidoMaterno = 'Diaz',
-    @nombres = 'Eduardo',
-    @fechaNacimiento = '1976-10-10',
-    @celular = '99999999',
-    @correo = 'eduardo.lopez@mail.com';
-GO
+EXEC AgregarFamiliarSP
+    @idPacienteTitular = 2,
+    @idTipoParentesco = 2,      -- Ej: "Hijo", "Esposa", etc.
+    @idTipoDocumento = 1,       -- DNI, Pasaporte, etc.
+    @documento = '99999999',
+    @apellidoPaterno = 'Ramirez',
+    @apellidoMaterno = 'Lopez',
+    @nombres = 'Andrea',
+    @fechaNacimiento = '2010-05-15',
+    @celular = '987654321',
+    @correo = 'andrea.ramirez@example.com',
+    @idGenero = 2;              -- 1 = Masculino, 2 = Femenino
 
 -- Visualizar los parentescos
 
@@ -103,3 +103,8 @@ EXEC ActualizarPerfilSP
     @altura = 1.80,
     @idTipoSangre = 1;
 go
+
+
+
+-- Testear el listado paciente con familiar
+EXEC PacienteConFamiliaresSP @idPaciente = 2;

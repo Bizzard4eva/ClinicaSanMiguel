@@ -9,7 +9,7 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
         Task<DetailMedicalResponseDto> DetailMedicalAsync(int idCitaMedica);
 
         // Listados
-        Task<List<Paciente>> PatientsForMedicalReserveAsync(int idPaciente);
+        Task<List<PatientRelativesDto>> PatientsForMedicalReserveAsync(int idPaciente);
         Task<List<GeneralListResponseDto>> ClinicsAsync();
         Task<List<GeneralListResponseDto>> SpecialtiesAsync();
         Task<List<GeneralListResponseDto>> DoctorsAsync(int idClinica, int idEspecialidad);

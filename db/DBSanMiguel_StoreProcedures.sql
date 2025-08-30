@@ -310,3 +310,32 @@ BEGIN
       AND CM.idClinica = @idClinica;
 END
 GO
+
+-- 8. SP Para listar Pacientes y Familiar
+CREATE OR ALTER PROCEDURE PacienteConFamiliaresSP
+    @idPaciente INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Titular
+    SELECT 
+        P.idPaciente,
+        P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno AS Nombre,
+        'Titular' AS Parentesco
+    FROM Pacientes P
+    WHERE P.idPaciente = @idPaciente
+
+    UNION ALL
+
+    -- Familiares asociados
+    SELECT 
+        F.idPaciente,
+        F.nombres + ' ' + F.apellidoPaterno + ' ' + F.apellidoMaterno AS Nombre,
+        TP.parentesco
+    FROM PacientesParentesco PP
+    INNER JOIN Pacientes F ON F.idPaciente = PP.idFamiliar
+    INNER JOIN TipoParentesco TP ON TP.idTipoParentesco = PP.idTipoParentesco
+    WHERE PP.idPaciente = @idPaciente;
+END
+GO
