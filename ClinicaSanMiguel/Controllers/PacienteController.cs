@@ -31,6 +31,7 @@ namespace ClinicaSanMiguel.Controllers
             {
                 // Guardar en Session
                 HttpContext.Session.SetInt32("IdPaciente", resultado.Resultado);
+
                 TempData["Mensaje"] = "Bienvenido!";
                 return RedirectToAction("Index", "Home"); // TODO
             }
