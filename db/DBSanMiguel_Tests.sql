@@ -17,7 +17,6 @@ EXEC RegistroPacienteSP
     @correo = 'abel.sulca@example.com',
     @password = '12345';
 
-
 select *
 from Pacientes
 go
@@ -108,7 +107,7 @@ go
 
 
 -- Testear el listado paciente con familiar
-EXEC PacienteConFamiliaresSP @idPaciente = 2;
+EXEC PacienteConFamiliaresSP @idPaciente = 10;
 GO
 
 -- Testear loading profile por Id
