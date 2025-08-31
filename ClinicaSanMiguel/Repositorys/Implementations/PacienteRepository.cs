@@ -195,5 +195,80 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             }
             return response;
         }
+        public async Task<List<TipoParentesco>> ListRelationshipTypeAsync()
+        {
+            var response = new List<TipoParentesco>();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("SELECT idTipoParentesco, parentesco FROM TipoParentesco", conexion))
+            {
+                command.CommandType = CommandType.Text;
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        response.Add(new TipoParentesco
+                        {
+                            idTipoParentesco = reader.GetInt32(reader.GetOrdinal("idTipoParentesco")),
+                            parentesco = reader.GetString(reader.GetOrdinal("parentesco"))
+                        });
+                    }
+                }
+            }
+            return response;
+        }
+
+        public async Task<List<TipoDocumento>> ListDocumentTypeAsync()
+        {
+            var response = new List<TipoDocumento>();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("SELECT idTipoDocumento, documento FROM TipoDocumento", conexion))
+            {
+                command.CommandType = CommandType.Text;
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        response.Add(new TipoDocumento
+                        {
+                            idTipoDocumento = reader.GetInt32(reader.GetOrdinal("idTipoDocumento")),
+                            documento = reader.GetString(reader.GetOrdinal("documento"))
+                        });
+                    }
+                }
+            }
+            return response;
+        }
+
+        public async Task<List<Genero>> ListGenresAsync()
+        {
+            var response = new List<Genero>();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("SELECT idGenero, genero FROM Generos", conexion))
+            {
+                command.CommandType = CommandType.Text;
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        response.Add(new Genero
+                        {
+                            idGenero = reader.GetInt32(reader.GetOrdinal("idGenero")),
+                            genero = reader.GetString(reader.GetOrdinal("genero"))
+                        });
+                    }
+                }
+            }
+            return response;
+        }
+
     }
 }

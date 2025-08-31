@@ -102,7 +102,7 @@ namespace ClinicaSanMiguel.Controllers
 
 
         [HttpGet]
-        public IActionResult AddFamiliar()
+        public async Task<IActionResult> AddFamiliar()
         {
             var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
             if (idPaciente == null) return RedirectToAction("SelectLoginRegister", "Home");
@@ -111,6 +111,12 @@ namespace ClinicaSanMiguel.Controllers
             {
                 idPacienteTitular = idPaciente.Value
             };
+
+            // Llenar combos
+            ViewBag.TipoParentescos = await _pacienteRepository.ListRelationshipTypeAsync();
+            ViewBag.TipoDocumentos = await _pacienteRepository.ListDocumentTypeAsync();
+            ViewBag.Generos = await _pacienteRepository.ListGenresAsync();
+
             return View(model);
         }
         [HttpPost]
@@ -118,6 +124,10 @@ namespace ClinicaSanMiguel.Controllers
         {
             if (!ModelState.IsValid)
             {
+                // volver a llenar combos si falla validación
+                ViewBag.TipoParentescos = await _pacienteRepository.ListRelationshipTypeAsync();
+                ViewBag.TipoDocumentos = await _pacienteRepository.ListDocumentTypeAsync();
+                ViewBag.Generos = await _pacienteRepository.ListGenresAsync();
                 return View(request);
             }
 
@@ -131,6 +141,10 @@ namespace ClinicaSanMiguel.Controllers
             else
             {
                 ViewBag.Error = resultado.Mensaje;
+                // recarga combos en caso de error
+                ViewBag.TipoParentescos = await _pacienteRepository.ListRelationshipTypeAsync();
+                ViewBag.TipoDocumentos = await _pacienteRepository.ListDocumentTypeAsync();
+                ViewBag.Generos = await _pacienteRepository.ListGenresAsync();
                 return View(request);
             }
         }
@@ -147,7 +161,7 @@ namespace ClinicaSanMiguel.Controllers
             var model = new UpdateProfileRequestDto
             {
                 IdPaciente = profile.IdPaciente,
-                IdGenero = (profile.Genero == "Masculino" ? 1 : profile.Genero == "Femenino" ? 2 : 3),
+                IdGenero = (profile.Genero == "Masculino" ? 1 : 2),
                 Peso = profile.Peso ?? 0,
                 Altura = profile.Altura ?? 0,
                 IdTipoSangre = 0
@@ -162,6 +176,7 @@ namespace ClinicaSanMiguel.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.TiposSangre = await _pacienteRepository.ListBloodTypeAsync();
                 return View(request);
             }
             var resultado = await _pacienteRepository.UpdateProfileAsync(request);
@@ -172,6 +187,7 @@ namespace ClinicaSanMiguel.Controllers
             }
             else
             {
+                ViewBag.TiposSangre = await _pacienteRepository.ListBloodTypeAsync();
                 ViewBag.Error = resultado.Mensaje;
                 return View(request);
             }

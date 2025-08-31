@@ -13,5 +13,9 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
 
         // Listados
         Task<List<TipoSangre>> ListBloodTypeAsync();
+        Task<List<TipoParentesco>> ListRelationshipTypeAsync();
+        Task<List<TipoDocumento>> ListDocumentTypeAsync();
+        Task<List<Genero>> ListGenresAsync();
+
     }
 }
