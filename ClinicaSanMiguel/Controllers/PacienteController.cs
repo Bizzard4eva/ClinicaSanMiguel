@@ -29,7 +29,6 @@ namespace ClinicaSanMiguel.Controllers
             var resultado = await _pacienteRepository.LoginAsync(request);
             if(resultado.Resultado > 0)
             {
-                HttpContext.Session.SetInt32("IdPaciente", resultado.Resultado);
                 TempData["Mensaje"] = "Bienvenido!";
                 return RedirectToAction("Index", "Home"); // TODO
             }
@@ -56,7 +55,7 @@ namespace ClinicaSanMiguel.Controllers
             if (resultado.Resultado > 0)
             {
                 TempData["Mensaje"] = "Registro Exitoso!";
-                return RedirectToAction("Index", "Home"); // TODO
+                return RedirectToAction("SelectLoginRegister", "Home"); // TODO
             }
             else
             {
@@ -145,5 +144,6 @@ namespace ClinicaSanMiguel.Controllers
             // TODO
             return View();
         }
+
     }
 }
