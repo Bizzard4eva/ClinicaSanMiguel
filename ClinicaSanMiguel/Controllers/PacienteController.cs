@@ -1,6 +1,7 @@
 ﻿using ClinicaSanMiguel.DTOs;
 using ClinicaSanMiguel.Repositorys.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ClinicaSanMiguel.Controllers
 {
@@ -31,7 +32,7 @@ namespace ClinicaSanMiguel.Controllers
             {
                 HttpContext.Session.SetInt32("IdPaciente", resultado.Resultado);
                 TempData["Mensaje"] = "Bienvenido!";
-                return RedirectToAction("Index", "Home"); // TODO
+                return RedirectToAction("Profile", "Paciente"); // TODO
             }
             else
             {
@@ -110,9 +111,23 @@ namespace ClinicaSanMiguel.Controllers
 
 
         [HttpGet]
-        public IActionResult UpdateProfile()
+        public async Task<IActionResult> UpdateProfile()
         {
-            return View();
+            var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
+            if (idPaciente == null) return RedirectToAction("Login", "Paciente");
+
+            var profile = await _pacienteRepository.LoadingProfileAsync(idPaciente.Value);
+
+            var model = new UpdateProfileRequestDto
+            {
+                IdPaciente = profile.IdPaciente,
+                IdGenero = (profile.Genero == "Masculino" ? 1 : profile.Genero == "Femenino" ? 2 : 3),
+                Peso = profile.Peso ?? 0,
+                Altura = profile.Altura ?? 0,
+                IdTipoSangre = 0
+            };
+
+            return View(model);
         }
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(UpdateProfileRequestDto request)
@@ -124,8 +139,8 @@ namespace ClinicaSanMiguel.Controllers
             var resultado = await _pacienteRepository.UpdateProfileAsync(request);
             if (resultado.Resultado > 0)
             {
-                TempData["Mensaje"] = "Registro Exitoso!";
-                return RedirectToAction("Index", "Home"); // TODO
+                TempData["Mensaje"] = "Perfil actualizado correctamente!";
+                return RedirectToAction("Profile", "Paciente"); // TODO
             }
             else
             {

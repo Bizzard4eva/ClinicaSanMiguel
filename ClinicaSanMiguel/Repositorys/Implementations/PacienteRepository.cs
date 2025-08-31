@@ -119,7 +119,7 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
 
             await using (SqlConnection conexion = new SqlConnection(_conexion))
 
-            await using (SqlCommand command = new SqlCommand("ActualizarPerfilSP", conexion))
+            await using (SqlCommand command = new SqlCommand("ActualizarPerfilClinicoSP", conexion))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@idPaciente", request.IdPaciente);
