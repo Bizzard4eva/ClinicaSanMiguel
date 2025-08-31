@@ -1,4 +1,45 @@
-﻿
-@{
+﻿@model ClinicaSanMiguel.DTOs.UpdateProfileRequestDto
 
+@{
+    ViewData["Title"] = "Editar Perfil";
+}
+
+<h2 class="text-center mt-4">Editar Perfil</h2>
+
+<form asp-action="UpdateProfile" method="post">
+    <input type="hidden" asp-for="IdPaciente" />
+
+    <div class="form-group">
+        <label asp-for="IdGenero">Género</label>
+        <select asp-for="IdGenero" class="form-control">
+            <option value="1">Masculino</option>
+            <option value="2">Femenino</option>
+            <option value="3">Otro</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Peso">Peso (kg)</label>
+        <input asp-for="Peso" class="form-control" type="number" step="0.1" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Altura">Altura (m)</label>
+        <input asp-for="Altura" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdTipoSangre">Grupo Sanguíneo</label>
+        <select asp-for="IdTipoSangre" class="form-control" asp-items="@(new SelectList(ViewBag.TiposSangre, "idTipoSangre", "tipoSangre"))">
+            <option value="">--Seleciona--</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Guardar Cambios</button>
+    <a asp-action="Profile" class="btn btn-secondary mt-3">Cancelar</a>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger mt-3">@ViewBag.Error</div>
 }

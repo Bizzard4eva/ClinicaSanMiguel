@@ -23,11 +23,23 @@ BEGIN
         RETURN;
     END
 
+	IF NOT EXISTS (
+        SELECT 1
+        FROM Pacientes
+        WHERE idPaciente = @idPaciente
+		AND titular = 1
+    )
+    BEGIN
+        -- Usuario no es titular
+        SELECT -2 AS Resultado, 'El usuario no tiene permisos para iniciar sesión' AS Mensaje;
+        RETURN;
+    END
+
     IF EXISTS (
         SELECT 1
         FROM Pacientes
         WHERE idPaciente = @idPaciente
-          AND password = @password
+        AND password = @password
     )
     BEGIN
         -- Login exitoso, retornamos el idPaciente
@@ -85,12 +97,12 @@ BEGIN
     INSERT INTO Pacientes (
         nombres, apellidoPaterno, apellidoMaterno,
         fechaNacimiento, celular, correo,
-        documento, password, idTipoDocumento, idGenero
+        documento, password, idTipoDocumento, idGenero, titular
     )
     VALUES (
         @nombres, @apellidoPaterno, @apellidoMaterno,
         @fechaNacimiento, @celular, @correo,
-        @documento, @password, @idTipoDocumento, @idGenero
+        @documento, @password, @idTipoDocumento, @idGenero, 1
     );
 
     -- Retornar el id del paciente recién creado
@@ -137,7 +149,6 @@ END
 GO
 
 -- 4. SP para registrar a un familiar 
-
 CREATE OR ALTER PROCEDURE AgregarFamiliarSP
     @idPacienteTitular INT,
     @idTipoParentesco INT,
@@ -156,7 +167,7 @@ BEGIN
 
     DECLARE @idFamiliar INT;
 
-    -- 1. Validar existencia del titular
+    -- Validar existencia del titular
     IF NOT EXISTS (
         SELECT 1 FROM Pacientes WHERE idPaciente = @idPacienteTitular
     )
@@ -165,7 +176,7 @@ BEGIN
         RETURN;
     END
 
-    -- 2. Validar que el documento no esté duplicado
+    -- Validar que el documento no esté duplicado
     IF EXISTS (
         SELECT 1 
         FROM Pacientes
@@ -177,7 +188,7 @@ BEGIN
         RETURN;
     END
 
-    -- 3. Insertar al nuevo paciente (familiar)
+    -- Insertar al nuevo paciente (familiar)
     INSERT INTO Pacientes (
         nombres, apellidoPaterno, apellidoMaterno,
         fechaNacimiento, celular, correo,
@@ -191,7 +202,7 @@ BEGIN
 
     SET @idFamiliar = SCOPE_IDENTITY();
 
-    -- 4. Insertar la relación en PacientesParentesco
+    --  Insertar la relación en PacientesParentesco
     INSERT INTO PacientesParentesco (
         idPaciente, idFamiliar, idTipoParentesco
     )
@@ -199,9 +210,172 @@ BEGIN
         @idPacienteTitular, @idFamiliar, @idTipoParentesco
     );
 
-    -- 5. Retornar confirmación
+    -- Retornar confirmación
     SELECT @idFamiliar AS Resultado, 'Familiar agregado correctamente' AS Mensaje;
 END
 GO
 
---
+-- 5. SP para registrar la Cita Medica
+CREATE OR ALTER PROCEDURE ReservarCitaMedicaSP
+    @idPaciente INT,
+    @idClinica INT,
+    @idMedico INT,
+    @fecha DATETIME,
+    @idSeguroSalud INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @precioEspecialidad DECIMAL(10,2);
+    DECLARE @cobertura INT;
+    DECLARE @precioFinal DECIMAL(10,2);
+    DECLARE @idCitaMedica INT;
+
+    -- Obtener precio de la especialidad del médico
+    SELECT @precioEspecialidad = E.precio
+    FROM 
+	Medicos M
+    INNER JOIN 
+	Especialidades E 
+	ON M.idEspecialidad = E.idEspecialidad
+    WHERE M.idMedico = @idMedico;
+
+    -- Obtener cobertura del seguro
+    SELECT @cobertura = cobertura
+    FROM SeguroSalud
+    WHERE idSeguroSalud = @idSeguroSalud;
+
+    -- Calcular precio final
+    SET @precioFinal = @precioEspecialidad * (100 - @cobertura) / 100.0;
+
+    --  Insertar la cita médica
+    INSERT INTO CitaMedica (
+        idClinica, idPaciente, idMedico, fecha, idSeguroSalud, precio
+    )
+    VALUES (
+        @idClinica, @idPaciente, @idMedico, @fecha, @idSeguroSalud, @precioFinal
+    );
+
+    SET @idCitaMedica = SCOPE_IDENTITY();
+
+    -- Retornar éxito
+    SELECT @idCitaMedica AS Resultado, 'Cita médica reservada correctamente' AS Mensaje;
+END
+GO
+
+-- 6. SP para visualizar los detalles de la CitaMedica
+
+CREATE OR ALTER PROCEDURE DetallesCitaMedicaSP
+    @idCitaMedica INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        -- Paciente
+        P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno AS Paciente,
+
+        -- Especialidad
+        E.especialidad AS Especialidad,
+
+        -- Médico
+        M.nombres + ' ' + M.apellidos AS Medico,
+
+        -- Clínica
+        C.nombre AS Clinica,
+
+        -- Fecha y hora de la cita
+        CM.fecha AS FechaHora,
+
+        -- Seguro de salud
+        S.nombreSeguro AS Seguro,
+
+        -- Precio final calculado y guardado
+        CM.precio AS Precio
+    FROM CitaMedica CM
+    INNER JOIN Pacientes P ON CM.idPaciente = P.idPaciente
+    INNER JOIN Medicos M ON CM.idMedico = M.idMedico
+    INNER JOIN Especialidades E ON M.idEspecialidad = E.idEspecialidad
+    INNER JOIN Clinicas C ON CM.idClinica = C.idClinica
+    INNER JOIN SeguroSalud S ON CM.idSeguroSalud = S.idSeguroSalud
+    WHERE CM.idCitaMedica = @idCitaMedica;
+END
+GO
+
+------------------------------
+------------------------------
+
+-- 7. SP para listar Medicos filtrado con Especialidad y Clinica
+CREATE OR ALTER PROCEDURE MedicosPorEspecialidadClinicaSP
+    @idClinica INT,
+	@idEspecialidad INT
+AS
+BEGIN
+    SELECT 
+        M.idMedico,
+        M.nombres + ' ' + M.apellidos AS nombre
+    FROM Medicos AS M
+    INNER JOIN Especialidades AS E ON M.idEspecialidad = E.idEspecialidad
+    INNER JOIN ClinicaMedico AS CM ON M.idMedico = CM.idMedico
+    INNER JOIN Clinicas AS C ON CM.idClinica = C.idClinica
+    WHERE M.idEspecialidad = @idEspecialidad
+      AND CM.idClinica = @idClinica;
+END
+GO
+
+-- 8. SP Para listar Pacientes y Familiar
+CREATE OR ALTER PROCEDURE PacienteConFamiliaresSP
+    @idPaciente INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Titular
+    SELECT 
+        P.idPaciente,
+        P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno AS Nombre,
+        'Titular' AS Parentesco
+    FROM Pacientes P
+    WHERE P.idPaciente = @idPaciente
+
+    UNION ALL
+
+    -- Familiares asociados
+    SELECT 
+        F.idPaciente,
+        F.nombres + ' ' + F.apellidoPaterno + ' ' + F.apellidoMaterno AS Nombre,
+        TP.parentesco
+    FROM PacientesParentesco PP
+    INNER JOIN Pacientes F ON F.idPaciente = PP.idFamiliar
+    INNER JOIN TipoParentesco TP ON TP.idTipoParentesco = PP.idTipoParentesco
+    WHERE PP.idPaciente = @idPaciente;
+END
+GO
+
+
+-- 9. Cargar perfil por Id Paciente
+CREATE OR ALTER PROCEDURE CargarPerfilSP
+    @idPaciente INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        P.idPaciente,
+        (P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno) AS Nombre,
+        G.genero AS Genero,
+        DATEDIFF(YEAR, P.fechaNacimiento, GETDATE()) 
+            - CASE 
+                WHEN (MONTH(P.fechaNacimiento) > MONTH(GETDATE())) 
+                     OR (MONTH(P.fechaNacimiento) = MONTH(GETDATE()) AND DAY(P.fechaNacimiento) > DAY(GETDATE())) 
+                THEN 1 ELSE 0 
+              END AS Edad,
+        P.peso AS Peso,
+        P.altura AS Altura,
+        TS.tipoSangre AS GrupoSanguineo
+    FROM Pacientes P
+    INNER JOIN Generos G ON P.idGenero = G.idGenero
+    LEFT JOIN TipoSangre TS ON P.idTipoSangre = TS.idTipoSangre
+    WHERE P.idPaciente = @idPaciente;
+END
+GO

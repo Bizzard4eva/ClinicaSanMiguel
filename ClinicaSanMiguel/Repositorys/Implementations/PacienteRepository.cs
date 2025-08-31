@@ -3,7 +3,7 @@ using ClinicaSanMiguel.Models;
 using ClinicaSanMiguel.Repositorys.Interfaces;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using Microsoft.Data.Sql;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ClinicaSanMiguel.Repositorys.Implementations
 {
@@ -22,31 +22,31 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
 
             await using (SqlConnection con = new SqlConnection(_conexion))
             await using (SqlCommand cmd = new SqlCommand("AgregarFamiliarSP", con))
-            { 
-                cmd.CommandType = CommandType.StoredProcedure; 
-                cmd.Parameters.AddWithValue("@idPacienteTitular", request.idPacienteTitular); 
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@idPacienteTitular", request.idPacienteTitular);
                 cmd.Parameters.AddWithValue("@idTipoParentesco", request.idTipoParentesco);
                 cmd.Parameters.AddWithValue("@idTipoDocumento", request.idTipoDocumento);
-                cmd.Parameters.AddWithValue("@documento", request.documento); 
+                cmd.Parameters.AddWithValue("@documento", request.documento);
                 cmd.Parameters.AddWithValue("@apellidoPaterno", request.apellidoPaterno);
                 cmd.Parameters.AddWithValue("@apellidoMaterno", request.apellidoMaterno);
-                cmd.Parameters.AddWithValue("@nombres", request.nombres); 
+                cmd.Parameters.AddWithValue("@nombres", request.nombres);
                 cmd.Parameters.AddWithValue("@fechaNacimiento", request.fechaNacimiento);
                 cmd.Parameters.AddWithValue("@celular", request.celular);
-                cmd.Parameters.AddWithValue("@correo", request.correo); 
+                cmd.Parameters.AddWithValue("@correo", request.correo);
                 cmd.Parameters.AddWithValue("@idGenero", request.idGenero);
 
                 await con.OpenAsync();
-                
-                using (var reader = await cmd.ExecuteReaderAsync()) 
-                { 
-                    if (await reader.ReadAsync()) 
-                    { 
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
                         response.Resultado = reader.GetInt32(reader.GetOrdinal("Resultado"));
-                        response.Mensaje = reader.GetString(reader.GetOrdinal("Mensaje")); 
-                    } 
-                } 
-            } 
+                        response.Mensaje = reader.GetString(reader.GetOrdinal("Mensaje"));
+                    }
+                }
+            }
             return response;
         }
 
@@ -120,7 +120,7 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
 
             await using (SqlConnection conexion = new SqlConnection(_conexion))
 
-            await using (SqlCommand command = new SqlCommand("ActualizarPerfilSP", conexion))
+            await using (SqlCommand command = new SqlCommand("ActualizarPerfilClinicoSP", conexion))
             {
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@idPaciente", request.IdPaciente);
@@ -143,6 +143,59 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             return response;
         }
 
+        public async Task<ProfileResponseDto> LoadingProfileAsync(int idPaciente)
+        {
+            var response = new ProfileResponseDto();
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("CargarPerfilSP", conexion))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@idPaciente", idPaciente);
+                await conexion.OpenAsync();
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        response.IdPaciente = reader.GetInt32(reader.GetOrdinal("idPaciente"));
+                        response.Nombre = reader.GetString(reader.GetOrdinal("Nombre"));
+                        response.Genero = reader.GetString(reader.GetOrdinal("Genero"));
+                        response.Edad = reader.GetInt32(reader.GetOrdinal("Edad"));
+                        response.Peso = reader.IsDBNull(reader.GetOrdinal("Peso")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Peso"));
+                        response.Altura = reader.IsDBNull(reader.GetOrdinal("Altura")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Altura"));
+                        response.GrupoSanguineo = reader.IsDBNull(reader.GetOrdinal("GrupoSanguineo")) ? string.Empty : reader.GetString(reader.GetOrdinal("GrupoSanguineo"));
+                    }
+                }
+            }
+            return response;
+        }
+
+        public async Task<List<TipoSangre>> ListBloodTypeAsync()
+        {
+            var response = new List<TipoSangre>();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("SELECT idTipoSangre, tipoSangre FROM TipoSangre", conexion))
+            {
+                command.CommandType = CommandType.Text;
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var tipoSandre = new TipoSangre
+                        {
+                            idTipoSangre = reader.GetInt32(reader.GetOrdinal("idTipoSangre")),
+                            tipoSangre = reader.GetString(reader.GetOrdinal("tipoSangre"))
+                        };
+
+                        response.Add(tipoSandre);
+                    }
+                }
+            }
+            return response;
+        }
+        
         public async Task<Paciente?> GetPacienteByIdAsync(int pacienteId)
         {
             Paciente? paciente = null;

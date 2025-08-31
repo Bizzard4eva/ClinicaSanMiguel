@@ -1,0 +1,49 @@
+﻿
+@{
+    @model ClinicaSanMiguel.DTOs.ProfileResponseDto
+    ViewData["Title"] = "Profile";
+
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+
+<h2 class="text-center mt-4">Perfil del Paciente</h2>
+
+<div class="card mt-4 shadow p-4">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <strong>Nombre Completo:</strong> @Model.Nombre
+        </div>
+        <div class="col-md-3">
+            <strong>Edad:</strong> @Model.Edad años
+        </div>
+        <div class="col-md-3">
+            <strong>Género:</strong> @Model.Genero
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <strong>Peso:</strong> @(Model.Peso.HasValue ? $"{Model.Peso} kg" : "No registrado")
+        </div>
+        <div class="col-md-4">
+            <strong>Altura:</strong> @(Model.Altura.HasValue ? $"{Model.Altura} m" : "No registrado")
+        </div>
+        <div class="col-md-4">
+            <strong>Grupo Sanguíneo:</strong> @(string.IsNullOrEmpty(Model.GrupoSanguineo) ? "No registrado" : Model.GrupoSanguineo)
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="UpdateProfile" asp-controller="Paciente" class="btn btn-primary">Editar Perfil</a>
+        <a asp-action="Logout" asp-controller="Paciente" class="btn btn-danger">Cerrar Sesión</a>
+    </div>
+</div>
+<div class="mt-4">
+    <a asp-action="SelectPatient" asp-controller="ReservaMedica" class="btn btn-primary">Reservar una cita personal</a>
+</div>
+
+

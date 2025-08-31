@@ -1,18 +1,19 @@
-using ClinicaSanMiguel.Repositorys.Implementations;
+﻿using ClinicaSanMiguel.Repositorys.Implementations;
 using ClinicaSanMiguel.Repositorys.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
 builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 builder.Services.AddScoped<ICitaMedicaRepository, CitaMedicaRepository>();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(option => 
+{
+    option.IdleTimeout = TimeSpan.FromMinutes(10);
+    option.Cookie.HttpOnly = true;
+    option.Cookie.IsEssential = true;
+});
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -25,9 +26,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+// Habilitar sesión aquí
 app.UseSession();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
