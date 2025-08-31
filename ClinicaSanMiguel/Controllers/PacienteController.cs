@@ -27,7 +27,7 @@ namespace ClinicaSanMiguel.Controllers
                 return View(request);
             }
             var resultado = await _pacienteRepository.LoginAsync(request);
-            if(resultado.Resultado > 0)
+            if (resultado.Resultado > 0)
             {
                 HttpContext.Session.SetInt32("IdPaciente", resultado.Resultado);
                 TempData["Mensaje"] = "Bienvenido!";
@@ -69,11 +69,11 @@ namespace ClinicaSanMiguel.Controllers
         public async Task<IActionResult> Profile()
         {
             var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
-            if (idPaciente  == null) return RedirectToAction("Login", "Paciente");
+            if (idPaciente == null) return RedirectToAction("Login", "Paciente");
             var profile = await _pacienteRepository.LoadingProfileAsync(idPaciente.Value);
             return View(profile);
         }
- 
+
 
         [HttpGet]
         public IActionResult AddFamiliar(int idPacienteTitular)
