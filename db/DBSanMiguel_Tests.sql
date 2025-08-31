@@ -114,3 +114,6 @@ GO
 -- Testear loading profile por Id
 EXEC CargarPerfilSP @idPaciente = 10;
 GO
+
+select *
+from Generos

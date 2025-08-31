@@ -123,7 +123,7 @@ namespace ClinicaSanMiguel.Controllers
             var model = new UpdateProfileRequestDto
             {
                 IdPaciente = profile.IdPaciente,
-                IdGenero = (profile.Genero == "Masculino" ? 1 : profile.Genero == "Femenino" ? 2 : 3),
+                IdGenero = (profile.Genero == "Masculino" ? 1 : 2),
                 Peso = profile.Peso ?? 0,
                 Altura = profile.Altura ?? 0,
                 IdTipoSangre = 0
@@ -138,6 +138,7 @@ namespace ClinicaSanMiguel.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.TiposSangre = await _pacienteRepository.ListBloodTypeAsync();
                 return View(request);
             }
             var resultado = await _pacienteRepository.UpdateProfileAsync(request);
@@ -148,6 +149,7 @@ namespace ClinicaSanMiguel.Controllers
             }
             else
             {
+                ViewBag.TiposSangre = await _pacienteRepository.ListBloodTypeAsync();
                 ViewBag.Error = resultado.Mensaje;
                 return View(request);
             }

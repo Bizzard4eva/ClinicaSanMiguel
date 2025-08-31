@@ -21,5 +21,6 @@ namespace ClinicaSanMiguel.Controllers
             return View();
         }
 
+
     }
 }

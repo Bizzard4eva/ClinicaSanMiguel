@@ -1,0 +1,15 @@
+﻿@model List<ClinicaSanMiguel.DTOs.GeneralListResponseDto>
+
+<h2>Selecciona la Clínica</h2>
+
+<form asp-action="SelectClinic" method="post">
+    <select name="idClinica" class="form-control">
+        <option value="">-- Seleccione una clínica --</option>
+        @foreach (var item in Model)
+        {
+            <option value="@item.Id">@item.Nombre</option>
+        }
+    </select>
+    <br />
+    <button type="submit" class="btn btn-primary">Continuar</button>
+</form>
