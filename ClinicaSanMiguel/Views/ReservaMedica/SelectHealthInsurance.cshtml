@@ -1,0 +1,22 @@
+﻿
+@{
+    @model IEnumerable<ClinicaSanMiguel.DTOs.GeneralListResponseDto>
+    ViewData["Title"] = "Seleccionar seguro";
+}
+
+<h2>Selecciona tu seguro de salud</h2>
+
+<form asp-action="SelectHealthInsurance" method="post">
+    <div class="form-group">
+        <label for="idSeguroSeleccionado">Seguro</label>
+        <select id="idSeguroSeleccionado" name="idSeguroSeleccionado" class="form-control" required>
+            <option value="">-- Selecciona un seguro --</option>
+            @foreach (var seguro in Model)
+            {
+                <option value="@seguro.Id">@seguro.Nombre</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Continuar</button>
+</form>
