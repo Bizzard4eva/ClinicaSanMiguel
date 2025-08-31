@@ -8,8 +8,8 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
         Task<GeneralResponseDto> LoginAsync(LoginRequestDto request);
         Task<GeneralResponseDto> RegisterAsync(RegisterRequestDto request);
         Task<GeneralResponseDto> UpdateProfileAsync(UpdateProfileRequestDto request);
-
         Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request);
-
+        Task<Paciente?> GetPacienteByIdAsync(int pacienteId);
+        Task<List<Paciente>> GetFamiliaresByTitularAsync(int titularId);
     }
 }

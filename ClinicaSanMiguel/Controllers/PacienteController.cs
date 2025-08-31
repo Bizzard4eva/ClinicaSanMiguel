@@ -19,6 +19,28 @@ namespace ClinicaSanMiguel.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            // Verificar que el usuario esté logueado
+            var pacienteId = HttpContext.Session.GetInt32("PacienteId");
+            if (!pacienteId.HasValue)
+            {
+                TempData["Error"] = "Debe iniciar sesión para acceder al dashboard.";
+                return RedirectToAction("Login");
+            }
+
+            // Obtener los datos del paciente
+            var paciente = await _pacienteRepository.GetPacienteByIdAsync(pacienteId.Value);
+            if (paciente == null)
+            {
+                TempData["Error"] = "No se pudieron cargar los datos del paciente.";
+                return RedirectToAction("Login");
+            }
+
+            return View(paciente);
+        }
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequestDto request)
         {
@@ -32,7 +54,7 @@ namespace ClinicaSanMiguel.Controllers
                 // Guardar el ID del paciente en la sesión
                 HttpContext.Session.SetInt32("PacienteId", resultado.Resultado);
                 TempData["Mensaje"] = "Bienvenido!";
-                return RedirectToAction("Paso1", "Cita");
+                return RedirectToAction("Dashboard");
             }
             else
             {
@@ -65,6 +87,40 @@ namespace ClinicaSanMiguel.Controllers
                 return View(request);
             }
         }
+
+        [HttpGet]
+        public IActionResult AddFamiliar(int idPacienteTitular)
+        {
+            // Inicializas el modelo con el idPaciente titular
+            var model = new AddFamiliarRequestDto
+            {
+                idPacienteTitular = idPacienteTitular
+            };
+            return View(model); // <- Vista Create (AddFamiliar.cshtml)
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddFamiliar(AddFamiliarRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+
+            var resultado = await _pacienteRepository.AddFamiliarAsync(request);
+            if (resultado.Resultado > 0)
+            {
+                ViewBag.Mensaje = "Familiar agregado correctamente";
+                // Devuelves la misma vista limpia para poder ingresar otro familiar
+                return View(new AddFamiliarRequestDto { idPacienteTitular = request.idPacienteTitular });
+            }
+            else
+            {
+                ViewBag.Error = resultado.Mensaje;
+                return View(request);
+            }
+        }
+
 
         [HttpGet]
         public IActionResult UpdateProfile()

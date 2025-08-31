@@ -1,3 +1,6 @@
+@model ClinicaSanMiguel.Models.Paciente;
+
+
 @{
     ViewData["Title"] = "Reservar Cita - Seleccione Médico";
 }
@@ -5,38 +8,13 @@
 <!-- Paso 3: Seleccione Médico - Inspirado en 08.png, 09.png -->
 <section class="appointment-section">
     <div class="container">
-        <!-- Header con navegación -->
-        <div class="appointment-header mb-4">
-            <nav class="navbar navbar-expand-lg">
-                <div class="container-fluid">
-                    <div class="clinic-logo">
-                        <span class="clinic-name h5 text-primary">Clínica Santa Martha del Sur</span>
-                    </div>
-                    <div class="nav-menu">
-                        <ul class="navbar-nav">
-                            <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Exámenes médicos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Tarjeta Salud San Pablo</a></li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle btn btn-warning" href="#" role="button" data-bs-toggle="dropdown">
-                                    Selecciona tu sede
-                                </a>
-                            </li>
-                            <li class="nav-item"><a class="nav-link" href="#">Contáctanos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Mi perfil</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
-
         <!-- Título de la página -->
         <div class="page-title text-center mb-4">
             @{
                 var pacienteSeleccionado = ViewBag.PacienteSeleccionado != null ? 
-                    ((ClinicaSanMiguel.Models.Paciente)ViewBag.PacienteSeleccionado).nombres : "Paciente";
+                    ((Paciente)ViewBag.PacienteSeleccionado).nombres : "Paciente";
             }
-            <h1 class="text-primary">Reservar Cita - @pacienteSeleccionado - Clínica Santa Martha del Sur</h1>
+            <h1 class="text-primary">Reservar Cita - @pacienteSeleccionado - Clínica San Miguel</h1>
             <p class="text-muted">¡Es muy fácil! Puedes reservar tu cita buscando por médico o por fecha.</p>
         </div>
 
@@ -44,27 +22,19 @@
         <div class="progress-bar-container mb-5">
             <div class="progress-steps">
                 <div class="step completed">
-                    <div class="step-circle">
-                        <i class="fas fa-check"></i>
-                    </div>
+                    <div class="step-circle"></div>
                     <span class="step-label">Paso 1: Seleccione Paciente</span>
                 </div>
                 <div class="step completed">
-                    <div class="step-circle">
-                        <i class="fas fa-check"></i>
-                    </div>
+                    <div class="step-circle"></div>
                     <span class="step-label">Paso 2: Seleccione Especialidad</span>
                 </div>
                 <div class="step active">
-                    <div class="step-circle">
-                        <i class="fas fa-user-md"></i>
-                    </div>
+                    <div class="step-circle"></div>
                     <span class="step-label">Paso 3: Seleccione Médico</span>
                 </div>
                 <div class="step">
-                    <div class="step-circle">
-                        <i class="fas fa-check"></i>
-                    </div>
+                    <div class="step-circle"></div>
                     <span class="step-label">Paso 4: Confirmación</span>
                 </div>
             </div>
@@ -99,7 +69,6 @@
                     <!-- Botón de búsqueda -->
                     <div class="search-button-container mb-4">
                         <button class="btn btn-primary w-100 search-button">
-                            <i class="fas fa-search me-2"></i>
                             BUSCAR MÉDICO
                         </button>
                     </div>
@@ -111,9 +80,6 @@
                             @foreach(var medico in (List<ClinicaSanMiguel.Models.Medico>)ViewBag.Medicos)
                             {
                                 <div class="doctor-card" data-doctor-id="@medico.idMedico">
-                                    <div class="doctor-avatar">
-                                        <i class="fas fa-user-md"></i>
-                                    </div>
                                     <div class="doctor-info">
                                         <h6 class="doctor-name">DR(A). @(medico.apellidos.ToUpper()) @(medico.nombres.ToUpper())</h6>
                                         <p class="doctor-specialty">@medico.Especialidad?.especialidad</p>
@@ -135,12 +101,12 @@
                     <!-- Calendario -->
                     <div class="calendar-container mb-4">
                         <div class="calendar-header">
-                            <button class="btn btn-outline-primary btn-sm" id="prevMonth">
-                                <i class="fas fa-chevron-left"></i>
+                            <button class="btn btn-outline-light btn-sm" id="prevMonth">
+                                <
                             </button>
                             <h5 class="calendar-title" id="calendarTitle">SEPTIEMBRE 2025</h5>
-                            <button class="btn btn-outline-primary btn-sm" id="nextMonth">
-                                <i class="fas fa-chevron-right"></i>
+                            <button class="btn btn-outline-light btn-sm" id="nextMonth">
+                                >
                             </button>
                         </div>
 
@@ -296,12 +262,14 @@
             
             // Días del mes actual
             for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const isWeekend = date.getDay() === 0 || date.getDay() === 6; // 0 = Sunday, 6 = Saturday
+
                 const isAvailable = day >= 1 && day <= 30; // Simplificado para demo
-                const isHighlighted = [1, 8, 10, 15, 17, 22, 24, 26, 27, 29].includes(day);
                 
                 let dayClass = 'calendar-day';
                 if (isAvailable) dayClass += ' available';
-                if (isHighlighted) dayClass += ' highlighted';
+                if (isWeekend) dayClass += ' highlighted';
                 
                 const dateValue = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 

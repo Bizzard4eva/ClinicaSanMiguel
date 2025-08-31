@@ -1,0 +1,340 @@
+@model ClinicaSanMiguel.Models.Paciente
+
+@{
+    ViewData["Title"] = "Dashboard - Clínica San Miguel";
+}
+
+<!-- Dashboard Section inspirado en 02_01.png -->
+<section class="dashboard-section">
+    <div class="container mt-4">
+        
+        <!-- Welcome Header -->
+        <div class="welcome-header text-center mb-4">
+            <h1 class="welcome-title text-primary">¡Bienvenido @Model.nombres @Model.apellidoPaterno!</h1>
+            <p class="welcome-subtitle text-muted">
+                Aquí podrás reservar, pagar, reprogramar tus citas presenciales o teleconsultas y acceder a tu información de manera fácil y segura.
+            </p>
+            
+            <!-- Reminder Alert -->
+            <div class="alert alert-warning d-inline-flex align-items-center mb-4" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span>Recuerda elegir primero tu sede en el menú</span>
+            </div>
+        </div>
+
+        <!-- Main Action Buttons -->
+        <div class="main-actions text-center mb-5">
+            <a href="@Url.Action("Paso1", "Cita")" class="btn btn-primary btn-lg me-3 mb-2">
+                Reservar una cita presencial
+            </a>
+            <a href="#" class="btn btn-outline-primary btn-lg mb-2">
+                Reservar una teleconsulta
+            </a>
+        </div>
+
+        <div class="row">
+            <!-- Patient Profile Section -->
+            <div class="col-md-6 mb-4">
+                <div class="profile-section">
+                    <!-- Profile Header -->
+                    <div class="profile-header d-flex align-items-center mb-4">
+                        <div class="profile-avatar me-3">
+                            <img src="https://images.pexels.com/photos/5407249/pexels-photo-5407249.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" 
+                                 alt="Perfil" class="rounded-circle" width="80" height="80">
+                        </div>
+                        <div class="profile-info">
+                            <h5 class="profile-name text-primary mb-1">Mi Perfil Clínico</h5>
+                            <a href="@Url.Action("UpdateProfile", "Paciente")" class="profile-edit-link">
+                                Editar mi perfil <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Patient Information Cards -->
+                    <div class="patient-info-cards">
+                        <div class="info-card mb-2">
+                            <div class="info-row">
+                                <span class="info-label">Sexo</span>
+                                <span class="info-value">@(Model.Genero?.genero ?? "No especificado")</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card mb-2">
+                            <div class="info-row">
+                                <span class="info-label">Edad</span>
+                                <span class="info-value">@(Model.fechaNacimiento != null ? (DateTime.Now.Year - Model.fechaNacimiento.Value.Year) : 26) años</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card mb-2">
+                            <div class="info-row">
+                                <span class="info-label">Peso</span>
+                                <span class="info-value">Kg.</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card mb-2">
+                            <div class="info-row">
+                                <span class="info-label">Altura</span>
+                                <span class="info-value">Mt.</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card info-card-group">
+                            <div class="info-row">
+                                <span class="info-label">Grupo Sanguíneo</span>
+                                <span class="info-value"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Tips Section -->
+            <div class="col-md-6 mb-4">
+                <div class="health-tips-section">
+                    <div class="tips-header">
+                        <h5 class="tips-title">Tips de Salud</h5>
+                    </div>
+                    
+                    <div class="tips-carousel">
+                        <div class="tip-card active">
+                            <div class="tip-content">
+                                <i class="fas fa-chevron-left tip-nav-prev"></i>
+                                <p class="tip-text">Recuerda que donar sangre es donar vida.</p>
+                                <i class="fas fa-chevron-right tip-nav-next"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Section -->
+        <div class="appointments-section mb-4">
+            <div class="appointments-card">
+                <div class="card-header" data-bs-toggle="collapse" data-bs-target="#upcomingAppointments">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Citas Presenciales y Teleconsultas Programadas
+                        <i class="fas fa-chevron-up float-end"></i>
+                    </h5>
+                </div>
+                <div id="upcomingAppointments" class="collapse show">
+                    <div class="card-body">
+                        <p class="text-muted text-center py-3">No tiene citas programadas por el momento.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments History Section -->
+        <div class="appointments-history-section mb-4">
+            <div class="history-card">
+                <div class="card-header" data-bs-toggle="collapse" data-bs-target="#appointmentsHistory">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Historial de Citas Presenciales y Teleconsultas
+                        <i class="fas fa-chevron-down float-end"></i>
+                    </h5>
+                </div>
+                <div id="appointmentsHistory" class="collapse">
+                    <div class="card-body">
+                        <p class="text-muted text-center py-3">No hay historial de citas disponible.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+.dashboard-section {
+    padding: 20px 0;
+    background-color: #f8f9fa;
+    min-height: 80vh;
+}
+
+.welcome-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #7b2d8e;
+}
+
+.welcome-subtitle {
+    font-size: 1rem;
+    max-width: 800px;
+    margin: 0 auto 20px;
+}
+
+.main-actions .btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 25px;
+}
+
+.profile-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.profile-avatar img {
+    border: 3px solid #e9ecef;
+}
+
+.profile-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.profile-edit-link {
+    color: #7b2d8e;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.profile-edit-link:hover {
+    color: #5a1f68;
+    text-decoration: underline;
+}
+
+.patient-info-cards .info-card {
+    background: #f8f6ff;
+    border-radius: 8px;
+    padding: 12px 15px;
+    border-left: 4px solid #c8a8d8;
+}
+
+.patient-info-cards .info-card-group {
+    background: #c8a8d8;
+    color: white;
+    border-left: 4px solid #7b2d8e;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-label {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.info-card-group .info-label {
+    color: white;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #495057;
+}
+
+.info-card-group .info-value {
+    color: white;
+}
+
+.health-tips-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.tips-title {
+    background: #ffc107;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.tip-card {
+    background: #fff3cd;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.tip-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tip-text {
+    flex: 1;
+    margin: 0;
+    font-size: 1rem;
+    color: #856404;
+    font-weight: 500;
+}
+
+.tip-nav-prev, .tip-nav-next {
+    color: #7b2d8e;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 10px;
+}
+
+.tip-nav-prev:hover, .tip-nav-next:hover {
+    color: #5a1f68;
+}
+
+.appointments-card, .history-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.appointments-card .card-header, .history-card .card-header {
+    background: #7b2d8e;
+    color: white;
+    padding: 15px 20px;
+    cursor: pointer;
+    border: none;
+}
+
+.appointments-card .card-header h5, .history-card .card-header h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 20px;
+}
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Handle collapsible sections
+            $('.card-header').click(function() {
+                const target = $(this).data('bs-target');
+                const icon = $(this).find('.float-end');
+                
+                if ($(target).hasClass('show')) {
+                    icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                } else {
+                    icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                }
+            });
+
+            // Health tips navigation (placeholder for future implementation)
+            $('.tip-nav-prev, .tip-nav-next').click(function() {
+                // Future: implement tip carousel navigation
+                console.log('Navigating health tips');
+            });
+        });
+    </script>
+}

@@ -13,10 +13,8 @@
                     <!-- Logo y header -->
                     <div class="text-center mb-4">
                         <div class="clinic-logo mb-3">
-                            <i class="fas fa-user-md clinic-icon text-primary"></i>
-                            <span class="clinic-name h4 ms-2 text-primary">SAN PABLO</span>
+                            <span class="clinic-name h4 ms-2 text-primary">SAN MIGUEL</span>
                         </div>
-                        <button class="btn btn-outline-primary mb-3">Inicio</button>
                     </div>
 
                     <!-- Card de bienvenida -->
@@ -55,20 +53,22 @@
                                 <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
 
-                            <!-- reCAPTCHA placeholder -->
-                            <div class="recaptcha-container mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="recaptchaCheck" required>
-                                    <label class="form-check-label" for="recaptchaCheck">
-                                        <i class="fas fa-check-circle text-success me-1"></i> No soy un robot
-                                    </label>
+                            <!-- Mensajes de error y éxito -->
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.Error
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
-                                <small class="text-muted">reCAPTCHA - Powered by Google</small>
-                            </div>
+                            }
 
-                            <div class="text-center mb-3">
-                                <a href="#" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
-                            </div>
+                            @if (TempData["Mensaje"] != null)
+                            {
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-check-circle me-2"></i>@TempData["Mensaje"]
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            }
 
                             <button type="submit" class="btn btn-warning btn-lg w-100 login-submit">Ingresar</button>
                         </form>
@@ -76,33 +76,16 @@
                 </div>
             </div>
 
-            <!-- Imagen decorativa (opcional) -->
+            <!-- Imagen decorativa -->
             <div class="col-md-6 d-none d-md-block">
                 <div class="login-image-container text-center">
-                    <img src="https://images.pexels.com/photos/5207153/pexels-photo-5207153.jpeg" 
+                    <img src="https://images.pexels.com/photos/5407249/pexels-photo-5407249.jpeg"
                          alt="Doctor profesional" class="img-fluid rounded">
                 </div>
             </div>
         </div>
     </div>
 </section>
-
-<!-- Mensajes de error y éxito -->
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.Error
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
-@if (TempData["Mensaje"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle me-2"></i>@TempData["Mensaje"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
 
 @section Scripts {
     <script>

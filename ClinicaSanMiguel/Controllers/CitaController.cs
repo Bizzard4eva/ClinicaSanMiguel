@@ -1,8 +1,6 @@
 using ClinicaSanMiguel.Repositorys.Interfaces;
 using ClinicaSanMiguel.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
 
 namespace ClinicaSanMiguel.Controllers
 {
@@ -10,15 +8,11 @@ namespace ClinicaSanMiguel.Controllers
     {
         private readonly ICitaMedicaRepository _citaMedicaRepository;
         private readonly IPacienteRepository _pacienteRepository;
-        private readonly IConfiguration _configuration;
-        private readonly string _connectionString;
 
-        public CitaController(ICitaMedicaRepository citaMedicaRepository, IPacienteRepository pacienteRepository, IConfiguration configuration)
+        public CitaController(ICitaMedicaRepository citaMedicaRepository, IPacienteRepository pacienteRepository)
         {
             _citaMedicaRepository = citaMedicaRepository;
             _pacienteRepository = pacienteRepository;
-            _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("stringConexion") ?? "";
         }
 
         [HttpGet]
@@ -34,8 +28,8 @@ namespace ClinicaSanMiguel.Controllers
                 return RedirectToAction("Login", "Paciente");
             }
             
-            ViewBag.PacienteTitular = await GetPacienteByIdAsync(pacienteId.Value);
-            ViewBag.Familiares = await GetFamiliaresByTitularAsync(pacienteId.Value);
+            ViewBag.PacienteTitular = await _pacienteRepository.GetPacienteByIdAsync(pacienteId.Value);
+            ViewBag.Familiares = await _pacienteRepository.GetFamiliaresByTitularAsync(pacienteId.Value);
             
             return View();
         }
@@ -50,14 +44,14 @@ namespace ClinicaSanMiguel.Controllers
         [HttpGet]
         public async Task<IActionResult> Paso2()
         {
-            ViewBag.Especialidades = await GetEspecialidadesAsync();
-            ViewBag.SegurosHalud = await GetSegurosHaludAsync();
+            ViewBag.Especialidades = await _citaMedicaRepository.GetEspecialidadesAsync();
+            ViewBag.SegurosHalud = await _citaMedicaRepository.GetSegurosAsync();
             
             // Obtener datos del paciente seleccionado
             var pacienteSeleccionadoId = HttpContext.Session.GetInt32("PacienteSeleccionado");
             if (pacienteSeleccionadoId.HasValue)
             {
-                ViewBag.PacienteSeleccionado = await GetPacienteByIdAsync(pacienteSeleccionadoId.Value);
+                ViewBag.PacienteSeleccionado = await _pacienteRepository.GetPacienteByIdAsync(pacienteSeleccionadoId.Value);
             }
             
             return View();
@@ -80,15 +74,15 @@ namespace ClinicaSanMiguel.Controllers
             var especialidadId = HttpContext.Session.GetInt32("EspecialidadSeleccionada");
             if (especialidadId.HasValue)
             {
-                ViewBag.Medicos = await GetMedicosByEspecialidadAsync(especialidadId.Value);
-                ViewBag.EspecialidadSeleccionada = await GetEspecialidadByIdAsync(especialidadId.Value);
+                ViewBag.Medicos = await _citaMedicaRepository.GetMedicosByEspecialidadAsync(especialidadId.Value);
+                ViewBag.EspecialidadSeleccionada = await _citaMedicaRepository.GetEspecialidadByIdAsync(especialidadId.Value);
             }
             
             // Obtener datos del paciente seleccionado
             var pacienteSeleccionadoId = HttpContext.Session.GetInt32("PacienteSeleccionado");
             if (pacienteSeleccionadoId.HasValue)
             {
-                ViewBag.PacienteSeleccionado = await GetPacienteByIdAsync(pacienteSeleccionadoId.Value);
+                ViewBag.PacienteSeleccionado = await _pacienteRepository.GetPacienteByIdAsync(pacienteSeleccionadoId.Value);
             }
             
             return View();
@@ -123,13 +117,13 @@ namespace ClinicaSanMiguel.Controllers
             
             // Obtener objetos completos para mostrar información detallada
             if (pacienteId.HasValue)
-                ViewBag.PacienteSeleccionado = await GetPacienteByIdAsync(pacienteId.Value);
+                ViewBag.PacienteSeleccionado = await _pacienteRepository.GetPacienteByIdAsync(pacienteId.Value);
             if (especialidadId.HasValue)
-                ViewBag.EspecialidadSeleccionada = await GetEspecialidadByIdAsync(especialidadId.Value);
+                ViewBag.EspecialidadSeleccionada = await _citaMedicaRepository.GetEspecialidadByIdAsync(especialidadId.Value);
             if (medicoId.HasValue)
-                ViewBag.MedicoSeleccionado = await GetMedicoByIdAsync(medicoId.Value);
+                ViewBag.MedicoSeleccionado = await _citaMedicaRepository.GetMedicoByIdAsync(medicoId.Value);
             if (seguroId.HasValue)
-                ViewBag.SeguroSeleccionado = await GetSeguroByIdAsync(seguroId.Value);
+                ViewBag.SeguroSeleccionado = await _citaMedicaRepository.GetSeguroByIdAsync(seguroId.Value);
             
             return View();
         }
@@ -174,278 +168,5 @@ namespace ClinicaSanMiguel.Controllers
             return View();
         }
 
-        // Private helper methods for data access
-        private async Task<List<Especialidad>> GetEspecialidadesAsync()
-        {
-            var especialidades = new List<Especialidad>();
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand("SELECT idEspecialidad, especialidad, precio FROM Especialidades ORDER BY especialidad", connection);
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        especialidades.Add(new Especialidad
-                        {
-                            idEspecialidad = reader.GetInt32("idEspecialidad"),
-                            especialidad = reader.GetString("especialidad"),
-                            precio = reader.GetInt32("precio")
-                        });
-                    }
-                }
-            }
-            return especialidades;
-        }
-
-        private async Task<List<SeguroSalud>> GetSegurosHaludAsync()
-        {
-            var seguros = new List<SeguroSalud>();
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand("SELECT idSeguroSalud, nombreSeguro, cobertura FROM SeguroSalud ORDER BY nombreSeguro", connection);
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        seguros.Add(new SeguroSalud
-                        {
-                            idSeguroSalud = reader.GetInt32("idSeguroSalud"),
-                            nombreSeguro = reader.GetString("nombreSeguro"),
-                            cobertura = reader.GetInt32("cobertura")
-                        });
-                    }
-                }
-            }
-            return seguros;
-        }
-
-        private async Task<List<Medico>> GetMedicosByEspecialidadAsync(int especialidadId)
-        {
-            var medicos = new List<Medico>();
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand(@"
-                    SELECT m.idMedico, m.nombres, m.apellidos, m.celular, m.correo, 
-                           m.idEspecialidad, e.especialidad 
-                    FROM Medicos m 
-                    INNER JOIN Especialidades e ON m.idEspecialidad = e.idEspecialidad 
-                    WHERE m.idEspecialidad = @especialidadId
-                    ORDER BY m.apellidos, m.nombres", connection);
-                command.Parameters.AddWithValue("@especialidadId", especialidadId);
-                
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        medicos.Add(new Medico
-                        {
-                            idMedico = reader.GetInt32("idMedico"),
-                            nombres = reader.GetString("nombres"),
-                            apellidos = reader.GetString("apellidos"),
-                            celular = reader.IsDBNull("celular") ? null : reader.GetString("celular"),
-                            correo = reader.IsDBNull("correo") ? null : reader.GetString("correo"),
-                            idEspecialidad = reader.GetInt32("idEspecialidad"),
-                            Especialidad = new Especialidad
-                            {
-                                idEspecialidad = reader.GetInt32("idEspecialidad"),
-                                especialidad = reader.GetString("especialidad")
-                            }
-                        });
-                    }
-                }
-            }
-            return medicos;
-        }
-
-        private async Task<List<Paciente>> GetPacientesFamiliaresByTitularAsync(int titularId)
-        {
-            var pacientes = new List<Paciente>();
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand(@"
-                    SELECT p.idPaciente, p.nombres, p.apellidoPaterno, p.apellidoMaterno, 
-                           p.documento, p.titular, td.documento as tipoDoc,
-                           tp.parentesco
-                    FROM Pacientes p
-                    INNER JOIN TipoDocumento td ON p.idTipoDocumento = td.idTipoDocumento
-                    LEFT JOIN PacientesParentesco pp ON p.idPaciente = pp.idFamiliar
-                    LEFT JOIN TipoParentesco tp ON pp.idTipoParentesco = tp.idTipoParentesco
-                    WHERE p.idPaciente = @titularId OR pp.idPaciente = @titularId
-                    ORDER BY p.titular DESC, p.apellidoPaterno, p.nombres", connection);
-                command.Parameters.AddWithValue("@titularId", titularId);
-                
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        pacientes.Add(new Paciente
-                        {
-                            idPaciente = reader.GetInt32("idPaciente"),
-                            nombres = reader.GetString("nombres"),
-                            apellidoPaterno = reader.GetString("apellidoPaterno"),
-                            apellidoMaterno = reader.GetString("apellidoMaterno"),
-                            documento = reader.GetString("documento"),
-                            titular = reader.GetBoolean("titular")
-                        });
-                    }
-                }
-            }
-            return pacientes;
-        }
-
-        private async Task<Paciente?> GetPacienteByIdAsync(int pacienteId)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand(@"
-                    SELECT p.idPaciente, p.nombres, p.apellidoPaterno, p.apellidoMaterno, 
-                           p.documento, p.titular, td.documento as tipoDocumento
-                    FROM Pacientes p
-                    INNER JOIN TipoDocumento td ON p.idTipoDocumento = td.idTipoDocumento
-                    WHERE p.idPaciente = @pacienteId", connection);
-                command.Parameters.AddWithValue("@pacienteId", pacienteId);
-                
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new Paciente
-                        {
-                            idPaciente = reader.GetInt32("idPaciente"),
-                            nombres = reader.GetString("nombres"),
-                            apellidoPaterno = reader.GetString("apellidoPaterno"),
-                            apellidoMaterno = reader.GetString("apellidoMaterno"),
-                            documento = reader.GetString("documento"),
-                            titular = reader.GetBoolean("titular")
-                        };
-                    }
-                }
-            }
-            return null;
-        }
-
-        private async Task<List<Paciente>> GetFamiliaresByTitularAsync(int titularId)
-        {
-            var familiares = new List<Paciente>();
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand(@"
-                    SELECT f.idPaciente, f.nombres, f.apellidoPaterno, f.apellidoMaterno, 
-                           f.documento, f.titular, tp.parentesco
-                    FROM Pacientes f
-                    INNER JOIN PacientesParentesco pp ON f.idPaciente = pp.idFamiliar
-                    INNER JOIN TipoParentesco tp ON pp.idTipoParentesco = tp.idTipoParentesco
-                    WHERE pp.idPaciente = @titularId", connection);
-                command.Parameters.AddWithValue("@titularId", titularId);
-                
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        familiares.Add(new Paciente
-                        {
-                            idPaciente = reader.GetInt32("idPaciente"),
-                            nombres = reader.GetString("nombres"),
-                            apellidoPaterno = reader.GetString("apellidoPaterno"),
-                            apellidoMaterno = reader.GetString("apellidoMaterno"),
-                            documento = reader.GetString("documento"),
-                            titular = reader.GetBoolean("titular")
-                        });
-                    }
-                }
-            }
-            return familiares;
-        }
-
-        private async Task<Especialidad?> GetEspecialidadByIdAsync(int especialidadId)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand("SELECT idEspecialidad, especialidad, precio FROM Especialidades WHERE idEspecialidad = @especialidadId", connection);
-                command.Parameters.AddWithValue("@especialidadId", especialidadId);
-                
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new Especialidad
-                        {
-                            idEspecialidad = reader.GetInt32("idEspecialidad"),
-                            especialidad = reader.GetString("especialidad"),
-                            precio = reader.GetInt32("precio")
-                        };
-                    }
-                }
-            }
-            return null;
-        }
-
-        private async Task<Medico?> GetMedicoByIdAsync(int medicoId)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand(@"
-                    SELECT m.idMedico, m.nombres, m.apellidos, m.celular, m.correo, 
-                           m.idEspecialidad, e.especialidad 
-                    FROM Medicos m 
-                    INNER JOIN Especialidades e ON m.idEspecialidad = e.idEspecialidad 
-                    WHERE m.idMedico = @medicoId", connection);
-                command.Parameters.AddWithValue("@medicoId", medicoId);
-                
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new Medico
-                        {
-                            idMedico = reader.GetInt32("idMedico"),
-                            nombres = reader.GetString("nombres"),
-                            apellidos = reader.GetString("apellidos"),
-                            celular = reader.IsDBNull("celular") ? null : reader.GetString("celular"),
-                            correo = reader.IsDBNull("correo") ? null : reader.GetString("correo"),
-                            idEspecialidad = reader.GetInt32("idEspecialidad"),
-                            Especialidad = new Especialidad
-                            {
-                                idEspecialidad = reader.GetInt32("idEspecialidad"),
-                                especialidad = reader.GetString("especialidad")
-                            }
-                        };
-                    }
-                }
-            }
-            return null;
-        }
-
-        private async Task<SeguroSalud?> GetSeguroByIdAsync(int seguroId)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                var command = new SqlCommand("SELECT idSeguroSalud, nombreSeguro, cobertura FROM SeguroSalud WHERE idSeguroSalud = @seguroId", connection);
-                command.Parameters.AddWithValue("@seguroId", seguroId);
-                
-                await connection.OpenAsync();
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new SeguroSalud
-                        {
-                            idSeguroSalud = reader.GetInt32("idSeguroSalud"),
-                            nombreSeguro = reader.GetString("nombreSeguro"),
-                            cobertura = reader.GetInt32("cobertura")
-                        };
-                    }
-                }
-            }
-            return null;
-        }
     }
 }

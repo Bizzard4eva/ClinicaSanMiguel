@@ -4,7 +4,7 @@ namespace ClinicaSanMiguel.DTOs
 {
     public class AddFamiliarRequestDto
     {
-        public int idPaciente { get; set; }
+        public int idPacienteTitular { get; set; }
         public int idTipoParentesco { get; set; }
         public int idTipoDocumento { get; set; }
         public string documento { get; set; } = string.Empty;
@@ -14,5 +14,6 @@ namespace ClinicaSanMiguel.DTOs
         public DateTime fechaNacimiento { get; set; }
         public string celular { get; set; } = string.Empty;
         public string correo { get; set; } = string.Empty;
+        public int idGenero { get; set; }
     }
 }
