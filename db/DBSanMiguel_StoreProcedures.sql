@@ -31,7 +31,7 @@ BEGIN
     )
     BEGIN
         -- Usuario no es titular
-        SELECT -2 AS Resultado, 'El usuario no tiene permisos para iniciar sesión' AS Mensaje;
+        SELECT -2 AS Resultado, 'El usuario no tiene permisos para iniciar sesiï¿½n' AS Mensaje;
         RETURN;
     END
 
@@ -47,8 +47,8 @@ BEGIN
     END
     ELSE
     BEGIN
-        -- Contraseña incorrecta
-        SELECT -1 AS Resultado, 'Contraseña incorrecta' AS Mensaje;
+        -- Contraseï¿½a incorrecta
+        SELECT -1 AS Resultado, 'Contraseï¿½a incorrecta' AS Mensaje;
     END
 END
 GO
@@ -82,14 +82,14 @@ BEGIN
         RETURN;
     END
 
-    -- Validar duplicado por correo (si lo quieres único)
+    -- Validar duplicado por correo (si lo quieres ï¿½nico)
     IF @correo IS NOT NULL AND EXISTS (
         SELECT 1 
         FROM Pacientes
         WHERE correo = @correo
     )
     BEGIN
-        SELECT -2 AS Resultado, 'El correo ya está en uso' AS Mensaje;
+        SELECT -2 AS Resultado, 'El correo ya estï¿½ en uso' AS Mensaje;
         RETURN;
     END
 
@@ -105,7 +105,7 @@ BEGIN
         @documento, @password, @idTipoDocumento, @idGenero, 1
     );
 
-    -- Retornar el id del paciente recién creado
+    -- Retornar el id del paciente reciï¿½n creado
     DECLARE @idPaciente INT = SCOPE_IDENTITY();
 
     SELECT @idPaciente AS Resultado, 'Registro exitoso' AS Mensaje;
@@ -134,7 +134,7 @@ BEGIN
         RETURN;
     END
 
-    -- Actualizar los datos clínicos
+    -- Actualizar los datos clï¿½nicos
     UPDATE Pacientes
     SET 
         idGenero = @idGenero,
@@ -143,8 +143,8 @@ BEGIN
         idTipoSangre = @idTipoSangre
     WHERE idPaciente = @idPaciente;
 
-    -- Retornar confirmación
-    SELECT 1 AS Resultado, 'Perfil clínico actualizado correctamente' AS Mensaje;
+    -- Retornar confirmaciï¿½n
+    SELECT 1 AS Resultado, 'Perfil clï¿½nico actualizado correctamente' AS Mensaje;
 END
 GO
 
@@ -176,7 +176,7 @@ BEGIN
         RETURN;
     END
 
-    -- Validar que el documento no esté duplicado
+    -- Validar que el documento no estï¿½ duplicado
     IF EXISTS (
         SELECT 1 
         FROM Pacientes
@@ -202,7 +202,7 @@ BEGIN
 
     SET @idFamiliar = SCOPE_IDENTITY();
 
-    --  Insertar la relación en PacientesParentesco
+    --  Insertar la relaciï¿½n en PacientesParentesco
     INSERT INTO PacientesParentesco (
         idPaciente, idFamiliar, idTipoParentesco
     )
@@ -210,7 +210,7 @@ BEGIN
         @idPacienteTitular, @idFamiliar, @idTipoParentesco
     );
 
-    -- Retornar confirmación
+    -- Retornar confirmaciï¿½n
     SELECT @idFamiliar AS Resultado, 'Familiar agregado correctamente' AS Mensaje;
 END
 GO
@@ -231,7 +231,7 @@ BEGIN
     DECLARE @precioFinal DECIMAL(10,2);
     DECLARE @idCitaMedica INT;
 
-    -- Obtener precio de la especialidad del médico
+    -- Obtener precio de la especialidad del mï¿½dico
     SELECT @precioEspecialidad = E.precio
     FROM 
 	Medicos M
@@ -248,7 +248,7 @@ BEGIN
     -- Calcular precio final
     SET @precioFinal = @precioEspecialidad * (100 - @cobertura) / 100.0;
 
-    --  Insertar la cita médica
+    --  Insertar la cita mï¿½dica
     INSERT INTO CitaMedica (
         idClinica, idPaciente, idMedico, fecha, idSeguroSalud, precio
     )
@@ -258,8 +258,8 @@ BEGIN
 
     SET @idCitaMedica = SCOPE_IDENTITY();
 
-    -- Retornar éxito
-    SELECT @idCitaMedica AS Resultado, 'Cita médica reservada correctamente' AS Mensaje;
+    -- Retornar ï¿½xito
+    SELECT @idCitaMedica AS Resultado, 'Cita mï¿½dica reservada correctamente' AS Mensaje;
 END
 GO
 
@@ -278,10 +278,10 @@ BEGIN
         -- Especialidad
         E.especialidad AS Especialidad,
 
-        -- Médico
+        -- Mï¿½dico
         M.nombres + ' ' + M.apellidos AS Medico,
 
-        -- Clínica
+        -- Clï¿½nica
         C.nombre AS Clinica,
 
         -- Fecha y hora de la cita
@@ -377,5 +377,95 @@ BEGIN
     INNER JOIN Generos G ON P.idGenero = G.idGenero
     LEFT JOIN TipoSangre TS ON P.idTipoSangre = TS.idTipoSangre
     WHERE P.idPaciente = @idPaciente;
+END
+GO
+
+-- 10. SP para obtener citas activas/programadas de un paciente
+CREATE OR ALTER PROCEDURE CitasPacienteActivasSP
+    @idPaciente INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        CM.idCitaMedica AS IdCitaMedica,
+        P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno AS Paciente,
+        E.especialidad AS Especialidad,
+        M.nombres + ' ' + M.apellidos AS Medico,
+        C.nombre AS Clinica,
+        CM.fecha AS FechaHora,
+        S.nombreSeguro AS Seguro,
+        CM.precio AS Precio,
+        CASE 
+            WHEN CM.fecha > GETDATE() THEN 'Programada'
+            WHEN CM.fecha <= GETDATE() AND CM.fecha >= DATEADD(HOUR, -2, GETDATE()) THEN 'Confirmada'
+            ELSE 'Vencida'
+        END AS Estado
+    FROM CitaMedica CM
+    INNER JOIN Pacientes P ON CM.idPaciente = P.idPaciente
+    INNER JOIN Medicos M ON CM.idMedico = M.idMedico
+    INNER JOIN Especialidades E ON M.idEspecialidad = E.idEspecialidad
+    INNER JOIN Clinicas C ON CM.idClinica = C.idClinica
+    INNER JOIN SeguroSalud S ON CM.idSeguroSalud = S.idSeguroSalud
+    WHERE P.idPaciente = @idPaciente 
+       OR P.idPaciente IN (
+           -- Incluir familiares del paciente titular
+           SELECT PP.idFamiliar 
+           FROM PacientesParentesco PP 
+           WHERE PP.idPaciente = @idPaciente
+       )
+       OR CM.idPaciente IN (
+           -- Incluir citas donde el paciente es familiar de otro titular
+           SELECT PP.idPaciente 
+           FROM PacientesParentesco PP 
+           WHERE PP.idFamiliar = @idPaciente
+       )
+    AND CM.fecha >= DATEADD(DAY, -1, GETDATE()) -- Solo citas desde ayer hacia adelante
+    ORDER BY CM.fecha ASC;
+END
+GO
+
+-- 11. SP para obtener historial de citas de un paciente
+CREATE OR ALTER PROCEDURE HistorialCitasPacienteSP
+    @idPaciente INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        CM.idCitaMedica AS IdCitaMedica,
+        P.nombres + ' ' + P.apellidoPaterno + ' ' + P.apellidoMaterno AS Paciente,
+        E.especialidad AS Especialidad,
+        M.nombres + ' ' + M.apellidos AS Medico,
+        C.nombre AS Clinica,
+        CM.fecha AS FechaHora,
+        S.nombreSeguro AS Seguro,
+        CM.precio AS Precio,
+        CASE 
+            WHEN CM.fecha < DATEADD(HOUR, -2, GETDATE()) THEN 'Completada'
+            WHEN CM.fecha < GETDATE() THEN 'No AsistiÃ³'
+            ELSE 'Cancelada'
+        END AS Estado
+    FROM CitaMedica CM
+    INNER JOIN Pacientes P ON CM.idPaciente = P.idPaciente
+    INNER JOIN Medicos M ON CM.idMedico = M.idMedico
+    INNER JOIN Especialidades E ON M.idEspecialidad = E.idEspecialidad
+    INNER JOIN Clinicas C ON CM.idClinica = C.idClinica
+    INNER JOIN SeguroSalud S ON CM.idSeguroSalud = S.idSeguroSalud
+    WHERE P.idPaciente = @idPaciente 
+       OR P.idPaciente IN (
+           -- Incluir familiares del paciente titular
+           SELECT PP.idFamiliar 
+           FROM PacientesParentesco PP 
+           WHERE PP.idPaciente = @idPaciente
+       )
+       OR CM.idPaciente IN (
+           -- Incluir citas donde el paciente es familiar de otro titular
+           SELECT PP.idPaciente 
+           FROM PacientesParentesco PP 
+           WHERE PP.idFamiliar = @idPaciente
+       )
+    AND CM.fecha < DATEADD(DAY, -1, GETDATE()) -- Solo citas anteriores a ayer
+    ORDER BY CM.fecha DESC;
 END
 GO

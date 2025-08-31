@@ -17,5 +17,9 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
         Task<List<TipoDocumento>> ListDocumentTypeAsync();
         Task<List<Genero>> ListGenresAsync();
 
+
+        // Citas médicas
+        Task<List<PatientAppointmentDto>> GetPatientAppointmentsAsync(int idPaciente);
+        Task<List<PatientAppointmentDto>> GetPatientAppointmentHistoryAsync(int idPaciente);
     }
 }

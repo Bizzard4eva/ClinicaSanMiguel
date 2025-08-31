@@ -27,10 +27,13 @@
             <a href="@Url.Action("SelectPatient", "ReservaMedica")" class="btn btn-primary btn-lg me-3 mb-2">
                 Reservar una cita presencial
             </a>
-            <a href="#" class="btn btn-outline-primary btn-lg mb-2">
-                Reservar una teleconsulta
-            </a>
         </div>
+
+        <div class="text-center mb-5">
+            <a asp-action="UpdateProfile" asp-controller="Paciente" class="btn btn-primary">Editar Perfil</a>
+            <a asp-action="Logout" asp-controller="Paciente" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
+
 
         <div class="row">
             <!-- Patient Profile Section -->
@@ -100,9 +103,7 @@
                     <div class="tips-carousel">
                         <div class="tip-card active">
                             <div class="tip-content">
-                                <i class="fas fa-chevron-left tip-nav-prev"></i>
                                 <p class="tip-text">Recuerda que donar sangre es donar vida.</p>
-                                <i class="fas fa-chevron-right tip-nav-next"></i>
                             </div>
                         </div>
                     </div>
@@ -115,14 +116,56 @@
             <div class="appointments-card">
                 <div class="card-header" data-bs-toggle="collapse" data-bs-target="#upcomingAppointments">
                     <h5 class="mb-0">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        Citas Presenciales y Teleconsultas Programadas
-                        <i class="fas fa-chevron-up float-end"></i>
+                        Citas Presenciales
                     </h5>
                 </div>
                 <div id="upcomingAppointments" class="collapse show">
                     <div class="card-body">
-                        <p class="text-muted text-center py-3">No tiene citas programadas por el momento.</p>
+                        @{
+                            var upcomingAppointments = ViewBag.UpcomingAppointments as List<ClinicaSanMiguel.DTOs.PatientAppointmentDto>;
+                        }
+                        @if (upcomingAppointments != null && upcomingAppointments.Any())
+                        {
+                            <div class="appointments-list">
+                                @foreach (var appointment in upcomingAppointments)
+                                {
+                                    <div class="appointment-card mb-3">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2">
+                                                <div class="appointment-date">
+                                                    <div class="date-day">@appointment.FechaHora.ToString("dd")</div>
+                                                    <div class="date-month">@appointment.FechaHora.ToString("MMM").ToUpper()</div>
+                                                    <div class="date-time">@appointment.FechaHora.ToString("HH:mm")</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="appointment-info">
+                                                    <h6 class="appointment-specialty">@appointment.Especialidad</h6>
+                                                    <p class="appointment-doctor mb-1"><strong>Dr(a). @appointment.Medico</strong></p>
+                                                    <p class="appointment-clinic mb-1"><i class="fas fa-map-marker-alt me-1"></i>@appointment.Clinica</p>
+                                                    <p class="appointment-patient mb-0"><i class="fas fa-user me-1"></i>@appointment.Paciente</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="appointment-insurance">
+                                                    <span class="insurance-badge">@appointment.Seguro</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="appointment-actions">
+                                                    <span class="status-badge status-@appointment.Estado.ToLower().Replace(" ", "-")">@appointment.Estado</span>
+                                                    <div class="appointment-price">S/ @appointment.Precio.ToString("F2")</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted text-center py-3">No tiene citas programadas por el momento.</p>
+                        }
                     </div>
                 </div>
             </div>
@@ -133,19 +176,61 @@
             <div class="history-card">
                 <div class="card-header" data-bs-toggle="collapse" data-bs-target="#appointmentsHistory">
                     <h5 class="mb-0">
-                        <i class="fas fa-history me-2"></i>
-                        Historial de Citas Presenciales y Teleconsultas
-                        <i class="fas fa-chevron-down float-end"></i>
+                        Historial de Citas Presenciales
                     </h5>
                 </div>
                 <div id="appointmentsHistory" class="collapse">
                     <div class="card-body">
-                        <p class="text-muted text-center py-3">No hay historial de citas disponible.</p>
+                        @{
+                            var appointmentHistory = ViewBag.AppointmentHistory as List<ClinicaSanMiguel.DTOs.PatientAppointmentDto>;
+                        }
+                        @if (appointmentHistory != null && appointmentHistory.Any())
+                        {
+                            <div class="appointments-history-list">
+                                @foreach (var appointment in appointmentHistory.OrderByDescending(a => a.FechaHora))
+                                {
+                                    <div class="history-appointment-card mb-3">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2">
+                                                <div class="history-appointment-date">
+                                                    <div class="history-date-day">@appointment.FechaHora.ToString("dd")</div>
+                                                    <div class="history-date-month">@appointment.FechaHora.ToString("MMM").ToUpper()</div>
+                                                    <div class="history-date-year">@appointment.FechaHora.ToString("yyyy")</div>
+                                                    <div class="history-date-time">@appointment.FechaHora.ToString("HH:mm")</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="history-appointment-info">
+                                                    <h6 class="history-appointment-specialty">@appointment.Especialidad</h6>
+                                                    <p class="history-appointment-doctor mb-1"><strong>Dr(a). @appointment.Medico</strong></p>
+                                                    <p class="history-appointment-clinic mb-1"><i class="fas fa-map-marker-alt me-1"></i>@appointment.Clinica</p>
+                                                    <p class="history-appointment-patient mb-0"><i class="fas fa-user me-1"></i>@appointment.Paciente</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="history-appointment-insurance">
+                                                    <span class="history-insurance-badge">@appointment.Seguro</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="history-appointment-actions">
+                                                    <span class="history-status-badge history-status-@appointment.Estado.ToLower().Replace(" ", "-")">@appointment.Estado</span>
+                                                    <div class="history-appointment-price">S/ @appointment.Precio.ToString("F2")</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted text-center py-3">No hay historial de citas disponible.</p>
+                        }
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </section>
 
@@ -312,6 +397,196 @@
 
 .card-body {
     padding: 20px;
+}
+
+/* Appointment Cards Styles */
+.appointment-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    border-left: 4px solid #7b2d8e;
+    transition: all 0.3s ease;
+}
+
+.appointment-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.appointment-date {
+    background: #7b2d8e;
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    min-width: 80px;
+}
+
+.date-day {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.date-month {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.date-time {
+    font-size: 0.9rem;
+    margin-top: 2px;
+}
+
+.appointment-specialty {
+    color: #7b2d8e;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.appointment-doctor {
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+.appointment-clinic, .appointment-patient {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.insurance-badge {
+    background: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-programada {
+    background: #17a2b8;
+    color: white;
+}
+
+.status-confirmada {
+    background: #28a745;
+    color: white;
+}
+
+.status-cancelada {
+    background: #dc3545;
+    color: white;
+}
+
+.status-reprogramada {
+    background: #ffc107;
+    color: #212529;
+}
+
+.appointment-price {
+    font-weight: bold;
+    color: #7b2d8e;
+    margin-top: 5px;
+}
+
+/* History Appointment Cards Styles */
+.history-appointment-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 3px solid #6c757d;
+    border: 1px solid #e9ecef;
+}
+
+.history-appointment-date {
+    background: #6c757d;
+    color: white;
+    border-radius: 6px;
+    padding: 8px;
+    text-align: center;
+    min-width: 75px;
+}
+
+.history-date-day {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.history-date-month {
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.history-date-year {
+    font-size: 0.7rem;
+}
+
+.history-date-time {
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+.history-appointment-specialty {
+    color: #495057;
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-size: 1rem;
+}
+
+.history-appointment-doctor {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.history-appointment-clinic, .history-appointment-patient {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.history-insurance-badge {
+    background: #6c757d;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.history-status-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.history-status-completada {
+    background: #28a745;
+    color: white;
+}
+
+.history-status-cancelada {
+    background: #dc3545;
+    color: white;
+}
+
+.history-status-no-asistio {
+    background: #6c757d;
+    color: white;
+}
+
+.history-appointment-price {
+    font-weight: 500;
+    color: #495057;
+    margin-top: 4px;
+    font-size: 0.9rem;
 }
 </style>
 

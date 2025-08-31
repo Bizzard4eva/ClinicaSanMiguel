@@ -1,81 +1,390 @@
 ﻿@model ClinicaSanMiguel.DTOs.AddFamiliarRequestDto
+
 @{
-    ViewData["Title"] = "Agregar Familiar";
+    ViewData["Title"] = "Agregar Familiar - Clínica San Miguel";
 }
 
-<h2>Agregar familiar</h2>
+<!-- Agregar Familiar Section -->
+<section class="appointment-section">
+    <div class="container">
 
-<form asp-action="AddFamiliar" method="post">
-    <input type="hidden" asp-for="idPacienteTitular" />
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            <h1 class="text-primary">Agregar Familiar</h1>
+            <p class="text-muted">Registra a tu familiar para que pueda acceder a nuestros servicios médicos.</p>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="idTipoParentesco"></label>
-        <select asp-for="idTipoParentesco" class="form-control">
-            <option value="">Seleccione parentesco</option>
-            @foreach (var item in ViewBag.TipoParentescos)
-            {
-                <option value="@item.idTipoParentesco">@item.parentesco</option>
-            }
-        </select>
+        <!-- Formulario de registro -->
+        <div class="family-registration-container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="registration-card">
+                        <form asp-controller="Paciente" asp-action="AddFamiliar" method="post" id="familiarForm">
+                            <input type="hidden" asp-for="idPacienteTitular" />
+
+                            <div class="row">
+                                <!-- Parentesco -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="idTipoParentesco" class="form-label">Parentesco</label>
+                                        <select asp-for="idTipoParentesco" class="form-select" required>
+                                            <option value="">SELECCIONE EL PARENTESCO</option>
+                                            @foreach (var item in ViewBag.TipoParentescos)
+                                            {
+                                                <option value="@item.idTipoParentesco">@item.parentesco</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="idTipoParentesco" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Tipo de Documento -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="idTipoDocumento" class="form-label">Tipo de Documento</label>
+                                        <select asp-for="idTipoDocumento" class="form-select" required>
+                                            <option value="">SELECCIONE TIPO DE DOCUMENTO</option>
+                                            @foreach (var item in ViewBag.TipoDocumentos)
+                                            {
+                                                <option value="@item.idTipoDocumento">@item.documento</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="idTipoDocumento" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Número de Documento -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="documento" class="form-label">Número de Documento</label>
+                                        <input asp-for="documento" class="form-control" type="text" required
+                                               placeholder="Ingrese el número de documento" maxlength="15" />
+                                        <span asp-validation-for="documento" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Género -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="idGenero" class="form-label">Género</label>
+                                        <select asp-for="idGenero" class="form-select" required>
+                                            <option value="">SELECCIONE EL GÉNERO</option>
+                                            @foreach (var item in ViewBag.Generos)
+                                            {
+                                                <option value="@item.idGenero">@item.genero</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="idGenero" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Nombres -->
+                                <div class="col-md-12">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="nombres" class="form-label">Nombres</label>
+                                        <input asp-for="nombres" class="form-control" type="text" required
+                                               placeholder="Ingrese los nombres completos" maxlength="50" />
+                                        <span asp-validation-for="nombres" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Apellido Paterno -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+                                        <input asp-for="apellidoPaterno" class="form-control" type="text" required
+                                               placeholder="Apellido paterno" maxlength="50" />
+                                        <span asp-validation-for="apellidoPaterno" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Apellido Materno -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                                        <input asp-for="apellidoMaterno" class="form-control" type="text" required
+                                               placeholder="Apellido materno" maxlength="50" />
+                                        <span asp-validation-for="apellidoMaterno" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Fecha de Nacimiento -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                                        <input asp-for="fechaNacimiento" type="date" class="form-control" required
+                                               max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                        <span asp-validation-for="fechaNacimiento" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Celular -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="celular" class="form-label">Celular</label>
+                                        <input asp-for="celular" class="form-control" type="tel"
+                                               placeholder="999 999 999" pattern="[0-9]{9}" maxlength="9" />
+                                        <span asp-validation-for="celular" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Correo Electrónico -->
+                                <div class="col-md-12">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="correo" class="form-label">Correo Electrónico</label>
+                                        <input asp-for="correo" type="email" class="form-control"
+                                               placeholder="ejemplo@correo.com" maxlength="100" />
+                                        <span asp-validation-for="correo" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mensajes de error -->
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger mb-4">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    @ViewBag.Error
+                                </div>
+                            }
+
+                            @if (ViewBag.Mensaje != null)
+                            {
+                                <div class="alert alert-success mb-4">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    @ViewBag.Mensaje
+                                </div>
+                            }
+
+                            <!-- Información importante -->
+                            <div class="info-section mb-4">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Información importante:</strong> 
+                                    <ul class="mb-0 mt-2">
+                                        <li>Los campos marcados con * son obligatorios</li>
+                                        <li>El familiar podrá acceder a los servicios médicos bajo su cuenta</li>
+                                        <li>Podrá reservar citas médicas para este familiar</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Botones de acción -->
+                            <div class="action-buttons text-center">
+                                <a asp-controller="ReservaMedica" asp-action="SelectPatient" class="btn btn-outline-secondary me-3">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus me-2"></i>Registrar Familiar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="form-group">
-        <label asp-for="idTipoDocumento"></label>
-        <select asp-for="idTipoDocumento" class="form-control">
-            <option value="">Seleccione documento</option>
-            @foreach (var item in ViewBag.TipoDocumentos)
-            {
-                <option value="@item.idTipoDocumento">@item.documento</option>
-            }
-        </select>
-    </div>
+<style>
+.appointment-section {
+    padding: 40px 0;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
 
-    <div class="form-group">
-        <label asp-for="documento"></label>
-        <input asp-for="documento" class="form-control" />
-    </div>
+.page-title h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #7b2d8e;
+}
 
-    <div class="form-group">
-        <label asp-for="apellidoPaterno"></label>
-        <input asp-for="apellidoPaterno" class="form-control" />
-    </div>
+.page-title p {
+    font-size: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
 
-    <div class="form-group">
-        <label asp-for="apellidoMaterno"></label>
-        <input asp-for="apellidoMaterno" class="form-control" />
-    </div>
+.registration-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
 
-    <div class="form-group">
-        <label asp-for="nombres"></label>
-        <input asp-for="nombres" class="form-control" />
-    </div>
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
 
-    <div class="form-group">
-        <label asp-for="fechaNacimiento"></label>
-        <input asp-for="fechaNacimiento" type="date" class="form-control" />
-    </div>
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
 
-    <div class="form-group">
-        <label asp-for="celular"></label>
-        <input asp-for="celular" class="form-control" />
-    </div>
+.form-control:focus, .form-select:focus {
+    border-color: #7b2d8e;
+    box-shadow: 0 0 0 0.2rem rgba(123, 45, 142, 0.25);
+}
 
-    <div class="form-group">
-        <label asp-for="correo"></label>
-        <input asp-for="correo" type="email" class="form-control" />
-    </div>
+.form-control::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
 
-    <div class="form-group">
-        <label asp-for="idGenero"></label>
-        <select asp-for="idGenero" class="form-control">
-            <option value="">Seleccione género</option>
-            @foreach (var item in ViewBag.Generos)
-            {
-                <option value="@item.idGenero">@item.genero</option>
-            }
-        </select>
-    </div>
+.info-section .alert {
+    border-left: 4px solid #17a2b8;
+    background-color: #d1ecf1;
+    border-color: #b8daff;
+    color: #0c5460;
+}
 
-    <button type="submit" class="btn btn-primary">Guardar</button>
-    <a asp-controller="ReservaMedica" asp-action="SelectPatient" class="btn btn-secondary">Cancelar</a>
-</form>
+.info-section .alert ul {
+    padding-left: 20px;
+}
+
+.action-buttons .btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 25px;
+    min-width: 160px;
+}
+
+.btn-primary {
+    background-color: #7b2d8e;
+    border-color: #7b2d8e;
+}
+
+.btn-primary:hover {
+    background-color: #5a1f68;
+    border-color: #5a1f68;
+}
+
+.text-danger {
+    font-size: 0.875rem;
+    margin-top: 5px;
+}
+
+.alert {
+    border-radius: 10px;
+}
+
+.alert-success {
+    border-left: 4px solid #28a745;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    border-left: 4px solid #dc3545;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Formatear número de celular automáticamente
+            $('#celular').on('input', function() {
+                let value = $(this).val().replace(/\D/g, '');
+                if (value.length > 9) {
+                    value = value.substring(0, 9);
+                }
+                $(this).val(value);
+            });
+
+            // Validar documento según tipo
+            $('#idTipoDocumento').change(function() {
+                const tipoDoc = $(this).val();
+                const docInput = $('#documento');
+                
+                if (tipoDoc === '1') { // DNI
+                    docInput.attr('maxlength', '8');
+                    docInput.attr('pattern', '[0-9]{8}');
+                    docInput.attr('placeholder', '12345678');
+                } else if (tipoDoc === '2') { // Carnet de Extranjería
+                    docInput.attr('maxlength', '12');
+                    docInput.attr('pattern', '[A-Z0-9]{9,12}');
+                    docInput.attr('placeholder', 'ABC123456789');
+                } else if (tipoDoc === '3') { // Pasaporte
+                    docInput.attr('maxlength', '12');
+                    docInput.attr('pattern', '[A-Z0-9]{6,12}');
+                    docInput.attr('placeholder', 'AB1234567');
+                }
+            });
+
+            // Solo números para documento si es DNI
+            $('#documento').on('input', function() {
+                const tipoDoc = $('#idTipoDocumento').val();
+                if (tipoDoc === '1') { // DNI
+                    let value = $(this).val().replace(/\D/g, '');
+                    if (value.length > 8) {
+                        value = value.substring(0, 8);
+                    }
+                    $(this).val(value);
+                }
+            });
+
+            // Validación de edad (no permitir fechas futuras ni muy antiguas)
+            $('#fechaNacimiento').change(function() {
+                const fechaNacimiento = new Date($(this).val());
+                const hoy = new Date();
+                const hace120anos = new Date(hoy.getFullYear() - 120, hoy.getMonth(), hoy.getDate());
+                
+                if (fechaNacimiento > hoy) {
+                    alert('La fecha de nacimiento no puede ser futura');
+                    $(this).val('');
+                } else if (fechaNacimiento < hace120anos) {
+                    alert('La fecha de nacimiento no puede ser mayor a 120 años');
+                    $(this).val('');
+                }
+            });
+
+            // Capitalizar nombres y apellidos
+            $('#nombres, #apellidoPaterno, #apellidoMaterno').on('blur', function() {
+                const value = $(this).val();
+                $(this).val(value.charAt(0).toUpperCase() + value.slice(1).toLowerCase());
+            });
+
+            // Validación del formulario antes del envío
+            $('#familiarForm').on('submit', function(e) {
+                const requiredFields = ['idTipoParentesco', 'idTipoDocumento', 'documento', 'nombres', 
+                                      'apellidoPaterno', 'apellidoMaterno', 'fechaNacimiento', 'idGenero'];
+                let isValid = true;
+                
+                requiredFields.forEach(function(field) {
+                    const $field = $(`[name="${field}"]`);
+                    if (!$field.val() || $field.val().trim() === '') {
+                        $field.addClass('is-invalid');
+                        isValid = false;
+                    } else {
+                        $field.removeClass('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    alert('Por favor complete todos los campos obligatorios');
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <script>
+        $(document).ready(function() {
+            alert('@TempData["Mensaje"]');
+        });
+    </script>
+}

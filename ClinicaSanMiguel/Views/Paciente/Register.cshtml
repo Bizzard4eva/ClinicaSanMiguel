@@ -1,91 +1,435 @@
-﻿
+﻿@model ClinicaSanMiguel.DTOs.RegisterRequestDto
+
 @{
-    @model ClinicaSanMiguel.DTOs.RegisterRequestDto
-    ViewData["Title"] = "Registro de Paciente";
+    ViewData["Title"] = "Registro de Paciente - Clínica San Miguel";
 }
 
-<h2>Registro de Paciente</h2>
+<!-- Registro de Paciente Section -->
+<section class="appointment-section">
+    <div class="container">
 
-<form asp-action="Register" method="post">
-    <div>
-        <label>Tipo de Documento</label>
-        <select asp-for="IdTipoDocumento" class="form-control">
-            <option value="1">DNI</option>
-            <option value="2">Carnet de Extranjería</option>
-            <option value="3">Pasaporte</option>
-        </select>
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            <h1 class="text-primary">Registro de Paciente</h1>
+            <p class="text-muted">Regístrate para acceder a nuestros servicios médicos de calidad.</p>
+        </div>
+
+        <!-- Formulario de registro -->
+        <div class="patient-registration-container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="registration-card">
+                        <form asp-controller="Paciente" asp-action="Register" method="post" id="registerForm">
+                            
+                            <div class="row">
+                                <!-- Tipo de Documento -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="IdTipoDocumento" class="form-label">Tipo de Documento *</label>
+                                        <select asp-for="IdTipoDocumento" class="form-select" required>
+                                            <option value="">SELECCIONE TIPO DE DOCUMENTO</option>
+                                            <option value="1">DNI</option>
+                                            <option value="2">Carnet de Extranjería</option>
+                                            <option value="3">Pasaporte</option>
+                                        </select>
+                                        <span asp-validation-for="IdTipoDocumento" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Número de Documento -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="Documento" class="form-label">Número de Documento *</label>
+                                        <input asp-for="Documento" class="form-control" type="text" required
+                                               placeholder="Ingrese el número de documento" maxlength="15" />
+                                        <span asp-validation-for="Documento" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Nombres -->
+                                <div class="col-md-12">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="Nombres" class="form-label">Nombres *</label>
+                                        <input asp-for="Nombres" class="form-control" type="text" required
+                                               placeholder="Ingrese sus nombres completos" maxlength="50" />
+                                        <span asp-validation-for="Nombres" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Apellido Paterno -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="ApellidoPaterno" class="form-label">Apellido Paterno *</label>
+                                        <input asp-for="ApellidoPaterno" class="form-control" type="text" required
+                                               placeholder="Apellido paterno" maxlength="50" />
+                                        <span asp-validation-for="ApellidoPaterno" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Apellido Materno -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="ApellidoMaterno" class="form-label">Apellido Materno *</label>
+                                        <input asp-for="ApellidoMaterno" class="form-control" type="text" required
+                                               placeholder="Apellido materno" maxlength="50" />
+                                        <span asp-validation-for="ApellidoMaterno" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Fecha de Nacimiento -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="FechaNacimiento" class="form-label">Fecha de Nacimiento *</label>
+                                        <input asp-for="FechaNacimiento" type="date" class="form-control" required
+                                               max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Género -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="IdGenero" class="form-label">Género *</label>
+                                        <div class="gender-options">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" asp-for="IdGenero" value="1" id="genero1" />
+                                                <label class="form-check-label" for="genero1">Masculino</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" asp-for="IdGenero" value="2" id="genero2" />
+                                                <label class="form-check-label" for="genero2">Femenino</label>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="IdGenero" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Celular -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="Celular" class="form-label">Celular</label>
+                                        <input asp-for="Celular" class="form-control" type="tel"
+                                               placeholder="999 999 999" pattern="[0-9]{9}" maxlength="9" />
+                                        <span asp-validation-for="Celular" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Correo Electrónico -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="Correo" class="form-label">Correo Electrónico</label>
+                                        <input asp-for="Correo" type="email" class="form-control"
+                                               placeholder="ejemplo@correo.com" maxlength="100" />
+                                        <span asp-validation-for="Correo" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Contraseña -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label asp-for="Password" class="form-label">Contraseña *</label>
+                                        <input asp-for="Password" type="password" class="form-control" id="password" required
+                                               placeholder="Ingrese su contraseña" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Confirmar Contraseña -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="confirmPassword" class="form-label">Confirmar Contraseña *</label>
+                                        <input type="password" class="form-control" id="confirmPassword" required
+                                               placeholder="Confirme su contraseña" />
+                                        <div id="errorPassword" class="text-danger mt-2" style="display:none;">
+                                            Las contraseñas no coinciden.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mensajes de error -->
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger mb-4">
+                                    @ViewBag.Error
+                                </div>
+                            }
+
+                            @if (ViewBag.Mensaje != null)
+                            {
+                                <div class="alert alert-success mb-4">
+                                    @ViewBag.Mensaje
+                                </div>
+                            }
+
+                            <!-- Información importante -->
+                            <div class="info-section mb-4">
+                                <div class="alert alert-info">
+                                    <strong>Información importante:</strong> 
+                                    <ul class="mb-0 mt-2">
+                                        <li>Los campos marcados con * son obligatorios</li>
+                                        <li>Su información será protegida conforme a nuestras políticas de privacidad</li>
+                                        <li>Una vez registrado podrá acceder a reservar citas médicas</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Botones de acción -->
+                            <div class="action-buttons text-center">
+                                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary me-3">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    Registrar Paciente
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div>
-        <label>Número de Documento</label>
-        <input asp-for="Documento" class="form-control" />
-    </div>
+<style>
+.appointment-section {
+    padding: 40px 0;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
 
-    <div>
-        <label>Nombres</label>
-        <input asp-for="Nombres" class="form-control" />
-    </div>
+.page-title h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #7b2d8e;
+}
 
-    <div>
-        <label>Apellido Paterno</label>
-        <input asp-for="ApellidoPaterno" class="form-control" />
-    </div>
+.page-title p {
+    font-size: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
 
-    <div>
-        <label>Apellido Materno</label>
-        <input asp-for="ApellidoMaterno" class="form-control" />
-    </div>
+.registration-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
 
-    <div>
-        <label>Fecha de Nacimiento</label>
-        <input asp-for="FechaNacimiento" type="date" class="form-control" />
-    </div>
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
 
-    <div>
-        <label>Celular</label>
-        <input asp-for="Celular" class="form-control" />
-    </div>
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
 
-    <div>
-        <label>Correo</label>
-        <input asp-for="Correo" type="email" class="form-control" />
-    </div>
+.form-control:focus, .form-select:focus {
+    border-color: #7b2d8e;
+    box-shadow: 0 0 0 0.2rem rgba(123, 45, 142, 0.25);
+}
 
-    <div>
-        <label>Género</label><br />
-        <input type="radio" asp-for="IdGenero" value="1" /> Masculino
-        <input type="radio" asp-for="IdGenero" value="2" /> Femenino
-    </div>
+.form-control::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
 
-    <div>
-        <label>Contraseña</label>
-        <input asp-for="Password" type="password" class="form-control" id="password" />
-    </div>
+.gender-options {
+    padding: 12px 0;
+}
 
-    <div>
-        <label>Confirmar Contraseña</label>
-        <input type="password" class="form-control" id="confirmPassword" />
-    </div>
+.form-check-input {
+    margin-top: 0.25rem;
+    margin-right: 0.5rem;
+}
 
-    <div id="errorPassword" style="color:red; display:none;">
-        Las contraseñas no coinciden.
-    </div>
+.form-check-input:checked {
+    background-color: #7b2d8e;
+    border-color: #7b2d8e;
+}
 
-    <br />
+.form-check-inline {
+    margin-right: 2rem;
+}
 
-    <button type="submit" class="btn btn-primary">Registrar</button>
-</form>
+.info-section .alert {
+    border-left: 4px solid #17a2b8;
+    background-color: #d1ecf1;
+    border-color: #b8daff;
+    color: #0c5460;
+}
+
+.info-section .alert ul {
+    padding-left: 20px;
+}
+
+.action-buttons .btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 25px;
+    min-width: 160px;
+}
+
+.btn-primary {
+    background-color: #7b2d8e;
+    border-color: #7b2d8e;
+}
+
+.btn-primary:hover {
+    background-color: #5a1f68;
+    border-color: #5a1f68;
+}
+
+.text-danger {
+    font-size: 0.875rem;
+    margin-top: 5px;
+}
+
+.alert {
+    border-radius: 10px;
+}
+
+.alert-success {
+    border-left: 4px solid #28a745;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    border-left: 4px solid #dc3545;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+</style>
 
 @section Scripts {
     <script>
-        document.querySelector("form").addEventListener("submit", function (e) {
-            var pass = document.getElementById("password").value;
-            var confirm = document.getElementById("confirmPassword").value;
+        $(document).ready(function() {
+            // Formatear número de celular automáticamente
+            $('#Celular').on('input', function() {
+                let value = $(this).val().replace(/\D/g, '');
+                if (value.length > 9) {
+                    value = value.substring(0, 9);
+                }
+                $(this).val(value);
+            });
 
-            if (pass !== confirm) {
-                e.preventDefault(); // evita que se envíe el form
-                document.getElementById("errorPassword").style.display = "block";
+            // Validar documento según tipo
+            $('#IdTipoDocumento').change(function() {
+                const tipoDoc = $(this).val();
+                const docInput = $('#Documento');
+                
+                if (tipoDoc === '1') { // DNI
+                    docInput.attr('maxlength', '8');
+                    docInput.attr('pattern', '[0-9]{8}');
+                    docInput.attr('placeholder', '12345678');
+                } else if (tipoDoc === '2') { // Carnet de Extranjería
+                    docInput.attr('maxlength', '12');
+                    docInput.attr('pattern', '[A-Z0-9]{9,12}');
+                    docInput.attr('placeholder', 'ABC123456789');
+                } else if (tipoDoc === '3') { // Pasaporte
+                    docInput.attr('maxlength', '12');
+                    docInput.attr('pattern', '[A-Z0-9]{6,12}');
+                    docInput.attr('placeholder', 'AB1234567');
+                }
+            });
+
+            // Solo números para documento si es DNI
+            $('#Documento').on('input', function() {
+                const tipoDoc = $('#IdTipoDocumento').val();
+                if (tipoDoc === '1') { // DNI
+                    let value = $(this).val().replace(/\D/g, '');
+                    if (value.length > 8) {
+                        value = value.substring(0, 8);
+                    }
+                    $(this).val(value);
+                }
+            });
+
+            // Validación de edad (no permitir fechas futuras ni muy antiguas)
+            $('#FechaNacimiento').change(function() {
+                const fechaNacimiento = new Date($(this).val());
+                const hoy = new Date();
+                const hace120anos = new Date(hoy.getFullYear() - 120, hoy.getMonth(), hoy.getDate());
+                
+                if (fechaNacimiento > hoy) {
+                    alert('La fecha de nacimiento no puede ser futura');
+                    $(this).val('');
+                } else if (fechaNacimiento < hace120anos) {
+                    alert('La fecha de nacimiento no puede ser mayor a 120 años');
+                    $(this).val('');
+                }
+            });
+
+            // Capitalizar nombres y apellidos
+            $('#Nombres, #ApellidoPaterno, #ApellidoMaterno').on('blur', function() {
+                const value = $(this).val();
+                $(this).val(value.charAt(0).toUpperCase() + value.slice(1).toLowerCase());
+            });
+
+            // Validación de contraseñas
+            function validatePassword() {
+                var pass = document.getElementById("password").value;
+                var confirm = document.getElementById("confirmPassword").value;
+                var errorDiv = document.getElementById("errorPassword");
+
+                if (confirm !== '' && pass !== confirm) {
+                    errorDiv.style.display = "block";
+                    return false;
+                } else {
+                    errorDiv.style.display = "none";
+                    return true;
+                }
             }
+
+            $('#password, #confirmPassword').on('input', validatePassword);
+
+            // Validación del formulario antes del envío
+            $('#registerForm').on('submit', function(e) {
+                const requiredFields = ['IdTipoDocumento', 'Documento', 'Nombres', 
+                                      'ApellidoPaterno', 'ApellidoMaterno', 'FechaNacimiento', 'IdGenero', 'Password'];
+                let isValid = true;
+                
+                requiredFields.forEach(function(field) {
+                    const $field = $(`[name="${field}"]`);
+                    if (!$field.val() || $field.val().trim() === '') {
+                        $field.addClass('is-invalid');
+                        isValid = false;
+                    } else {
+                        $field.removeClass('is-invalid');
+                    }
+                });
+
+                // Validar contraseñas coincidan
+                if (!validatePassword()) {
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    alert('Por favor complete todos los campos obligatorios y verifique que las contraseñas coincidan');
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@if (TempData["Mensaje"] != null)
+{
+    <script>
+        $(document).ready(function() {
+            alert('@TempData["Mensaje"]');
         });
     </script>
 }
