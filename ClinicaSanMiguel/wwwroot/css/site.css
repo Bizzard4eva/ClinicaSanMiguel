@@ -427,7 +427,6 @@ body {
 
 /* Landing page hero section */
 .hero-section {
-    min-height: 100vh;
     background: linear-gradient(135deg, var(--color-light-purple), var(--color-white));
     padding: 2rem 0;
 }
