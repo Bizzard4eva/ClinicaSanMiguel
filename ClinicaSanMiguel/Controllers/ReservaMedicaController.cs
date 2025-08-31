@@ -13,14 +13,13 @@ namespace ClinicaSanMiguel.Controllers
         }
 
         [HttpGet]
-        public IActionResult Confirmar()
+        public IActionResult SelectPatient()
         {
+            var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
+            if (idPaciente == null) return RedirectToAction("SelectLoginRegister", "Home");
+            //TODO
             return View();
         }
-        [HttpPost]
-        public IActionResult Index()
-        {
-            return View();
-        }
+
     }
 }

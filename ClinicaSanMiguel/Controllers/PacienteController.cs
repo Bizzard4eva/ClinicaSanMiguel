@@ -40,6 +40,7 @@ namespace ClinicaSanMiguel.Controllers
             }
         }
 
+
         [HttpGet]
         public IActionResult Register()
         {
@@ -65,11 +66,13 @@ namespace ClinicaSanMiguel.Controllers
             }
         }
 
+
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
             var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
-            if (idPaciente == null) return RedirectToAction("Login", "Paciente");
+            if (idPaciente == null) return RedirectToAction("SelectLoginRegister", "Home");
+
             var profile = await _pacienteRepository.LoadingProfileAsync(idPaciente.Value);
             return View(profile);
         }
@@ -85,7 +88,6 @@ namespace ClinicaSanMiguel.Controllers
             };
             return View(model); // <- Vista Create (AddFamiliar.cshtml)
         }
-
         [HttpPost]
         public async Task<IActionResult> AddFamiliar(AddFamiliarRequestDto request)
         {
@@ -134,17 +136,11 @@ namespace ClinicaSanMiguel.Controllers
             }
         }
 
+
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
-
-        public IActionResult Index()
-        {
-            // TODO
-            return View();
-        }
-
     }
 }

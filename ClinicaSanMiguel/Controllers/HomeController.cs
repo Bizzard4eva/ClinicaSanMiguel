@@ -13,21 +13,30 @@ namespace ClinicaSanMiguel.Controllers
             _logger = logger;
         }
 
+
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
-
+        public IActionResult Validacion()
+        {
+            var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
+            if (idPaciente != null)
+            {
+                return RedirectToAction("Profile", "Paciente");
+            }
+            else
+            {
+                return View("SelectLoginRegister");
+            }
+        }
+        [HttpGet]
         public IActionResult SelectLoginRegister()
         {
             return View();
         }
 
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

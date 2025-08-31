@@ -142,7 +142,7 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             return response;
         }
 
-        async Task<ProfileResponseDto> IPacienteRepository.LoadingProfileAsync(int idPaciente)
+        public async Task<ProfileResponseDto> LoadingProfileAsync(int idPaciente)
         {
             var response = new ProfileResponseDto();
             await using (SqlConnection conexion = new SqlConnection(_conexion))
