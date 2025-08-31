@@ -231,7 +231,7 @@ BEGIN
     DECLARE @precioFinal DECIMAL(10,2);
     DECLARE @idCitaMedica INT;
 
-    -- Obtener precio de la especialidad del m�dico
+    -- Obtener precio de la especialidad del medico
     SELECT @precioEspecialidad = E.precio
     FROM 
 	Medicos M
@@ -278,10 +278,10 @@ BEGIN
         -- Especialidad
         E.especialidad AS Especialidad,
 
-        -- M�dico
+        -- Medico
         M.nombres + ' ' + M.apellidos AS Medico,
 
-        -- Cl�nica
+        -- Clinica
         C.nombre AS Clinica,
 
         -- Fecha y hora de la cita
@@ -301,9 +301,6 @@ BEGIN
     WHERE CM.idCitaMedica = @idCitaMedica;
 END
 GO
-
-------------------------------
-------------------------------
 
 -- 7. SP para listar Medicos filtrado con Especialidad y Clinica
 CREATE OR ALTER PROCEDURE MedicosPorEspecialidadClinicaSP

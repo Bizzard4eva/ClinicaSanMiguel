@@ -507,3 +507,18 @@ go
 
 select * from ClinicaMedico
 go
+
+-- Insertar citas pasadas para el paciente idPaciente = 4 (que ya tiene citas programadas)
+INSERT INTO CitaMedica (idClinica, idPaciente, idMedico, fecha, estado, precio, idSeguroSalud)
+VALUES 
+-- Cita de hace 3 días
+(1, 4, 25, DATEADD(DAY, -3, GETDATE()), 'Completada', 15.00, 2),
+
+-- Cita de hace 1 semana
+(2, 4, 38, DATEADD(DAY, -7, GETDATE()), 'Completada', 45.00, 3),
+
+-- Cita de hace 1 mes (Cardiología)
+(3, 4, 45, DATEADD(DAY, -30, GETDATE()), 'Completada', 80.00, 1),
+
+-- Cita de ayer que no asistió
+(1, 4, 18, DATEADD(DAY, -1, GETDATE()), 'No Asistió', 25.00, 4);

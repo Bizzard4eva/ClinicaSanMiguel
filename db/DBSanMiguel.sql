@@ -107,6 +107,7 @@ Create Table CitaMedica(
 GO
 ALTER TABLE CitaMedica
 ADD idSeguroSalud int null foreign key references SeguroSalud(idSeguroSalud);
+go
 
 Create Table ClinicaMedico (
     idClinica int not null foreign key references Clinicas(idClinica),
