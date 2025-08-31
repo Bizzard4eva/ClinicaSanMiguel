@@ -129,6 +129,8 @@ namespace ClinicaSanMiguel.Controllers
                 IdTipoSangre = 0
             };
 
+            ViewBag.TiposSangre = await _pacienteRepository.ListBloodTypeAsync();
+
             return View(model);
         }
         [HttpPost]

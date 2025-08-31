@@ -23,11 +23,23 @@ BEGIN
         RETURN;
     END
 
+	IF NOT EXISTS (
+        SELECT 1
+        FROM Pacientes
+        WHERE idPaciente = @idPaciente
+		AND titular = 1
+    )
+    BEGIN
+        -- Usuario no es titular
+        SELECT -2 AS Resultado, 'El usuario no tiene permisos para iniciar sesión' AS Mensaje;
+        RETURN;
+    END
+
     IF EXISTS (
         SELECT 1
         FROM Pacientes
         WHERE idPaciente = @idPaciente
-          AND password = @password
+        AND password = @password
     )
     BEGIN
         -- Login exitoso, retornamos el idPaciente
@@ -85,12 +97,12 @@ BEGIN
     INSERT INTO Pacientes (
         nombres, apellidoPaterno, apellidoMaterno,
         fechaNacimiento, celular, correo,
-        documento, password, idTipoDocumento, idGenero
+        documento, password, idTipoDocumento, idGenero, titular
     )
     VALUES (
         @nombres, @apellidoPaterno, @apellidoMaterno,
         @fechaNacimiento, @celular, @correo,
-        @documento, @password, @idTipoDocumento, @idGenero
+        @documento, @password, @idTipoDocumento, @idGenero, 1
     );
 
     -- Retornar el id del paciente recién creado
@@ -294,7 +306,7 @@ GO
 ------------------------------
 
 -- 7. SP para listar Medicos filtrado con Especialidad y Clinica
-CREATE PROCEDURE MedicosPorEspecialidadClinicaSP
+CREATE OR ALTER PROCEDURE MedicosPorEspecialidadClinicaSP
     @idClinica INT,
 	@idEspecialidad INT
 AS

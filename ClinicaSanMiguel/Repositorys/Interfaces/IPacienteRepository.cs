@@ -10,5 +10,8 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
         Task<GeneralResponseDto> UpdateProfileAsync(UpdateProfileRequestDto request);
         Task<GeneralResponseDto> AddFamiliarAsync(AddFamiliarRequestDto request);
         Task<ProfileResponseDto> LoadingProfileAsync(int idPaciente);
+
+        // Listados
+        Task<List<TipoSangre>> ListBloodTypeAsync();
     }
 }

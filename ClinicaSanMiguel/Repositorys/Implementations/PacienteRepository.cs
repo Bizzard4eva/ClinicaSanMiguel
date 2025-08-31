@@ -1,4 +1,5 @@
 ﻿using ClinicaSanMiguel.DTOs;
+using ClinicaSanMiguel.Models;
 using ClinicaSanMiguel.Repositorys.Interfaces;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -162,6 +163,33 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
                         response.Peso = reader.IsDBNull(reader.GetOrdinal("Peso")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Peso"));
                         response.Altura = reader.IsDBNull(reader.GetOrdinal("Altura")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Altura"));
                         response.GrupoSanguineo = reader.IsDBNull(reader.GetOrdinal("GrupoSanguineo")) ? string.Empty : reader.GetString(reader.GetOrdinal("GrupoSanguineo"));
+                    }
+                }
+            }
+            return response;
+        }
+
+        public async Task<List<TipoSangre>> ListBloodTypeAsync()
+        {
+            var response = new List<TipoSangre>();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("SELECT idTipoSangre, tipoSangre FROM TipoSangre", conexion))
+            {
+                command.CommandType = CommandType.Text;
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var tipoSandre = new TipoSangre
+                        {
+                            idTipoSangre = reader.GetInt32(reader.GetOrdinal("idTipoSangre")),
+                            tipoSangre = reader.GetString(reader.GetOrdinal("tipoSangre"))
+                        };
+
+                        response.Add(tipoSandre);
                     }
                 }
             }
