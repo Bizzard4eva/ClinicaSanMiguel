@@ -407,7 +407,7 @@ BEGIN
     INNER JOIN Especialidades E ON M.idEspecialidad = E.idEspecialidad
     INNER JOIN Clinicas C ON CM.idClinica = C.idClinica
     INNER JOIN SeguroSalud S ON CM.idSeguroSalud = S.idSeguroSalud
-    WHERE P.idPaciente = @idPaciente 
+    WHERE (P.idPaciente = @idPaciente 
        OR P.idPaciente IN (
            -- Incluir familiares del paciente titular
            SELECT PP.idFamiliar 
@@ -419,8 +419,8 @@ BEGIN
            SELECT PP.idPaciente 
            FROM PacientesParentesco PP 
            WHERE PP.idFamiliar = @idPaciente
-       )
-    AND CM.fecha >= DATEADD(DAY, -1, GETDATE()) -- Solo citas desde ayer hacia adelante
+       ))
+    AND CM.fecha >= GETDATE() -- Solo citas futuras o actuales
     ORDER BY CM.fecha ASC;
 END
 GO
@@ -452,7 +452,7 @@ BEGIN
     INNER JOIN Especialidades E ON M.idEspecialidad = E.idEspecialidad
     INNER JOIN Clinicas C ON CM.idClinica = C.idClinica
     INNER JOIN SeguroSalud S ON CM.idSeguroSalud = S.idSeguroSalud
-    WHERE P.idPaciente = @idPaciente 
+    WHERE (P.idPaciente = @idPaciente 
        OR P.idPaciente IN (
            -- Incluir familiares del paciente titular
            SELECT PP.idFamiliar 
@@ -464,8 +464,8 @@ BEGIN
            SELECT PP.idPaciente 
            FROM PacientesParentesco PP 
            WHERE PP.idFamiliar = @idPaciente
-       )
-    AND CM.fecha < DATEADD(DAY, -1, GETDATE()) -- Solo citas anteriores a ayer
+       ))
+    AND CM.fecha < GETDATE() -- Solo citas pasadas (cualquier fecha anterior a ahora)
     ORDER BY CM.fecha DESC;
 END
 GO
