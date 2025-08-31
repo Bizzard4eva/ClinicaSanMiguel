@@ -1,93 +1,81 @@
 ﻿@model ClinicaSanMiguel.DTOs.AddFamiliarRequestDto
-
 @{
-    ViewData["Title"] = "AddFamiliar";
+    ViewData["Title"] = "Agregar Familiar";
 }
 
-<h1>AddFamiliar</h1>
+<h2>Agregar familiar</h2>
 
-<h4>AddFamiliarRequestDto</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AddFamiliar">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="idPacienteTitular" class="control-label"></label>
-                <input asp-for="idPacienteTitular" class="form-control" />
-                <span asp-validation-for="idPacienteTitular" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="idTipoParentesco" class="control-label"></label>
-                <input asp-for="idTipoParentesco" class="form-control" />
-                <span asp-validation-for="idTipoParentesco" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="idTipoDocumento" class="control-label"></label>
-                <input asp-for="idTipoDocumento" class="form-control" />
-                <span asp-validation-for="idTipoDocumento" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="documento" class="control-label"></label>
-                <input asp-for="documento" class="form-control" />
-                <span asp-validation-for="documento" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="apellidoPaterno" class="control-label"></label>
-                <input asp-for="apellidoPaterno" class="form-control" />
-                <span asp-validation-for="apellidoPaterno" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="apellidoMaterno" class="control-label"></label>
-                <input asp-for="apellidoMaterno" class="form-control" />
-                <span asp-validation-for="apellidoMaterno" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="nombres" class="control-label"></label>
-                <input asp-for="nombres" class="form-control" />
-                <span asp-validation-for="nombres" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="fechaNacimiento" class="control-label"></label>
-                <input asp-for="fechaNacimiento" class="form-control" />
-                <span asp-validation-for="fechaNacimiento" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="celular" class="control-label"></label>
-                <input asp-for="celular" class="form-control" />
-                <span asp-validation-for="celular" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="correo" class="control-label"></label>
-                <input asp-for="correo" class="form-control" />
-                <span asp-validation-for="correo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="idGenero" class="control-label"></label>
-                <input asp-for="idGenero" class="form-control" />
-                <span asp-validation-for="idGenero" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="AddFamiliar" method="post">
+    <input type="hidden" asp-for="idPacienteTitular" />
+
+    <div class="form-group">
+        <label asp-for="idTipoParentesco"></label>
+        <select asp-for="idTipoParentesco" class="form-control">
+            <option value="">Seleccione parentesco</option>
+            @foreach (var item in ViewBag.TipoParentescos)
+            {
+                <option value="@item.idTipoParentesco">@item.parentesco</option>
+            }
+        </select>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="form-group">
+        <label asp-for="idTipoDocumento"></label>
+        <select asp-for="idTipoDocumento" class="form-control">
+            <option value="">Seleccione documento</option>
+            @foreach (var item in ViewBag.TipoDocumentos)
+            {
+                <option value="@item.idTipoDocumento">@item.documento</option>
+            }
+        </select>
+    </div>
 
-@if (ViewBag.Mensaje != null)
-{
-    <div class="alert alert-success">@ViewBag.Mensaje</div>
-}
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
+    <div class="form-group">
+        <label asp-for="documento"></label>
+        <input asp-for="documento" class="form-control" />
+    </div>
 
+    <div class="form-group">
+        <label asp-for="apellidoPaterno"></label>
+        <input asp-for="apellidoPaterno" class="form-control" />
+    </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    <div class="form-group">
+        <label asp-for="apellidoMaterno"></label>
+        <input asp-for="apellidoMaterno" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="nombres"></label>
+        <input asp-for="nombres" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="fechaNacimiento"></label>
+        <input asp-for="fechaNacimiento" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="celular"></label>
+        <input asp-for="celular" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="correo"></label>
+        <input asp-for="correo" type="email" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="idGenero"></label>
+        <select asp-for="idGenero" class="form-control">
+            <option value="">Seleccione género</option>
+            @foreach (var item in ViewBag.Generos)
+            {
+                <option value="@item.idGenero">@item.genero</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-controller="ReservaMedica" asp-action="SelectPatient" class="btn btn-secondary">Cancelar</a>
+</form>

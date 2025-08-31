@@ -80,33 +80,49 @@ namespace ClinicaSanMiguel.Controllers
 
 
         [HttpGet]
-        public IActionResult AddFamiliar(int idPacienteTitular)
+        public async Task<IActionResult> AddFamiliar()
         {
-            // Inicializas el modelo con el idPaciente titular
+            var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
+            if (idPaciente == null) return RedirectToAction("SelectLoginRegister", "Home");
+
             var model = new AddFamiliarRequestDto
             {
-                idPacienteTitular = idPacienteTitular
+                idPacienteTitular = idPaciente.Value
             };
-            return View(model); // <- Vista Create (AddFamiliar.cshtml)
+
+            // Llenar combos
+            ViewBag.TipoParentescos = await _pacienteRepository.ListRelationshipTypeAsync();
+            ViewBag.TipoDocumentos = await _pacienteRepository.ListDocumentTypeAsync();
+            ViewBag.Generos = await _pacienteRepository.ListGenresAsync();
+
+            return View(model);
         }
         [HttpPost]
         public async Task<IActionResult> AddFamiliar(AddFamiliarRequestDto request)
         {
             if (!ModelState.IsValid)
             {
+                // volver a llenar combos si falla validación
+                ViewBag.TipoParentescos = await _pacienteRepository.ListRelationshipTypeAsync();
+                ViewBag.TipoDocumentos = await _pacienteRepository.ListDocumentTypeAsync();
+                ViewBag.Generos = await _pacienteRepository.ListGenresAsync();
                 return View(request);
             }
 
             var resultado = await _pacienteRepository.AddFamiliarAsync(request);
+
             if (resultado.Resultado > 0)
             {
                 ViewBag.Mensaje = "Familiar agregado correctamente";
-                // Devuelves la misma vista limpia para poder ingresar otro familiar
-                return View(new AddFamiliarRequestDto { idPacienteTitular = request.idPacienteTitular });
+                return RedirectToAction("SelectPatient", "ReservaMedica");
             }
             else
             {
                 ViewBag.Error = resultado.Mensaje;
+                // recarga combos en caso de error
+                ViewBag.TipoParentescos = await _pacienteRepository.ListRelationshipTypeAsync();
+                ViewBag.TipoDocumentos = await _pacienteRepository.ListDocumentTypeAsync();
+                ViewBag.Generos = await _pacienteRepository.ListGenresAsync();
                 return View(request);
             }
         }
