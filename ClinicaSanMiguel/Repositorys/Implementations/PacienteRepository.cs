@@ -270,5 +270,71 @@ namespace ClinicaSanMiguel.Repositorys.Implementations
             return response;
         }
 
+        public async Task<List<PatientAppointmentDto>> GetPatientAppointmentsAsync(int idPaciente)
+        {
+            var response = new List<PatientAppointmentDto>();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("CitasPacienteActivasSP", conexion))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@idPaciente", idPaciente);
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        response.Add(new PatientAppointmentDto
+                        {
+                            IdCitaMedica = reader.GetInt32(reader.GetOrdinal("IdCitaMedica")),
+                            Paciente = reader.GetString(reader.GetOrdinal("Paciente")),
+                            Especialidad = reader.GetString(reader.GetOrdinal("Especialidad")),
+                            Medico = reader.GetString(reader.GetOrdinal("Medico")),
+                            Clinica = reader.GetString(reader.GetOrdinal("Clinica")),
+                            FechaHora = reader.GetDateTime(reader.GetOrdinal("FechaHora")),
+                            Seguro = reader.GetString(reader.GetOrdinal("Seguro")),
+                            Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                            Estado = reader.GetString(reader.GetOrdinal("Estado"))
+                        });
+                    }
+                }
+            }
+            return response;
+        }
+
+        public async Task<List<PatientAppointmentDto>> GetPatientAppointmentHistoryAsync(int idPaciente)
+        {
+            var response = new List<PatientAppointmentDto>();
+
+            await using (SqlConnection conexion = new SqlConnection(_conexion))
+            await using (SqlCommand command = new SqlCommand("HistorialCitasPacienteSP", conexion))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@idPaciente", idPaciente);
+                await conexion.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        response.Add(new PatientAppointmentDto
+                        {
+                            IdCitaMedica = reader.GetInt32(reader.GetOrdinal("IdCitaMedica")),
+                            Paciente = reader.GetString(reader.GetOrdinal("Paciente")),
+                            Especialidad = reader.GetString(reader.GetOrdinal("Especialidad")),
+                            Medico = reader.GetString(reader.GetOrdinal("Medico")),
+                            Clinica = reader.GetString(reader.GetOrdinal("Clinica")),
+                            FechaHora = reader.GetDateTime(reader.GetOrdinal("FechaHora")),
+                            Seguro = reader.GetString(reader.GetOrdinal("Seguro")),
+                            Precio = reader.GetDecimal(reader.GetOrdinal("Precio")),
+                            Estado = reader.GetString(reader.GetOrdinal("Estado"))
+                        });
+                    }
+                }
+            }
+            return response;
+        }
+
     }
 }

@@ -19,6 +19,7 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
 
 
         // Citas médicas
-        //Task<List<PatientAppointmentDto>> GetPatientAppointmentsAsync(int idPaciente);
+        Task<List<PatientAppointmentDto>> GetPatientAppointmentsAsync(int idPaciente);
+        Task<List<PatientAppointmentDto>> GetPatientAppointmentHistoryAsync(int idPaciente);
     }
 }

@@ -40,6 +40,13 @@ namespace ClinicaSanMiguel.Controllers
                 return RedirectToAction("Login");
             }
 
+            // Cargar citas programadas y historial
+            var upcomingAppointments = await _pacienteRepository.GetPatientAppointmentsAsync(pacienteId.Value);
+            var appointmentHistory = await _pacienteRepository.GetPatientAppointmentHistoryAsync(pacienteId.Value);
+
+            ViewBag.UpcomingAppointments = upcomingAppointments;
+            ViewBag.AppointmentHistory = appointmentHistory;
+
             return View(profileData);
         }
         [HttpPost]
