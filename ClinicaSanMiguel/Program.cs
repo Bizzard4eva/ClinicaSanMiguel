@@ -1,4 +1,4 @@
-using ClinicaSanMiguel.Repositorys.Implementations;
+﻿using ClinicaSanMiguel.Repositorys.Implementations;
 using ClinicaSanMiguel.Repositorys.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +26,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+// Habilitar sesión aquí
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
