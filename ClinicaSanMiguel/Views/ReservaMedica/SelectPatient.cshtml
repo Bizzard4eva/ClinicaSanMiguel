@@ -1,0 +1,37 @@
+﻿
+@{
+    @model IEnumerable<ClinicaSanMiguel.DTOs.PatientRelativesDto>
+}
+
+<h2>Selecciona el paciente para la reserva</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Parentesco</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Nombre</td>
+                <td>@p.Parentesco</td>
+                <td>
+                    <a asp-controller="ReservaMedica"
+                       asp-action="SelectHealthInsurance"
+                       asp-route-idPaciente="@p.Id"
+                       class="btn btn-primary">
+                        Seleccionar
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Paciente" asp-action="AddFamiliar" class="btn btn-success">
+    ➕ Agregar familiar
+</a>
