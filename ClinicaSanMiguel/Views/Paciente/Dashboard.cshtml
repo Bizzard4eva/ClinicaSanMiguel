@@ -1,4 +1,4 @@
-@model ClinicaSanMiguel.Models.Paciente
+@model ClinicaSanMiguel.DTOs.ProfileResponseDto
 
 @{
     ViewData["Title"] = "Dashboard - Clínica San Miguel";
@@ -10,7 +10,7 @@
         
         <!-- Welcome Header -->
         <div class="welcome-header text-center mb-4">
-            <h1 class="welcome-title text-primary">¡Bienvenido @Model.nombres @Model.apellidoPaterno!</h1>
+            <h1 class="welcome-title text-primary">¡Bienvenido @Model.Nombre!</h1>
             <p class="welcome-subtitle text-muted">
                 Aquí podrás reservar, pagar, reprogramar tus citas presenciales o teleconsultas y acceder a tu información de manera fácil y segura.
             </p>
@@ -24,7 +24,7 @@
 
         <!-- Main Action Buttons -->
         <div class="main-actions text-center mb-5">
-            <a href="@Url.Action("Paso1", "Cita")" class="btn btn-primary btn-lg me-3 mb-2">
+            <a href="@Url.Action("SelectPatient", "ReservaMedica")" class="btn btn-primary btn-lg me-3 mb-2">
                 Reservar una cita presencial
             </a>
             <a href="#" class="btn btn-outline-primary btn-lg mb-2">
@@ -55,35 +55,35 @@
                         <div class="info-card mb-2">
                             <div class="info-row">
                                 <span class="info-label">Sexo</span>
-                                <span class="info-value">@(Model.Genero?.genero ?? "No especificado")</span>
+                                <span class="info-value">@Model.Genero</span>
                             </div>
                         </div>
                         
                         <div class="info-card mb-2">
                             <div class="info-row">
                                 <span class="info-label">Edad</span>
-                                <span class="info-value">@(Model.fechaNacimiento != null ? (DateTime.Now.Year - Model.fechaNacimiento.Value.Year) : 26) años</span>
+                                <span class="info-value">@Model.Edad años</span>
                             </div>
                         </div>
                         
                         <div class="info-card mb-2">
                             <div class="info-row">
                                 <span class="info-label">Peso</span>
-                                <span class="info-value">Kg.</span>
+                                <span class="info-value">@(Model.Peso.HasValue ? $"{Model.Peso} kg" : "No registrado")</span>
                             </div>
                         </div>
                         
                         <div class="info-card mb-2">
                             <div class="info-row">
                                 <span class="info-label">Altura</span>
-                                <span class="info-value">Mt.</span>
+                                <span class="info-value">@(Model.Altura.HasValue ? $"{Model.Altura} m" : "No registrado")</span>
                             </div>
                         </div>
                         
                         <div class="info-card info-card-group">
                             <div class="info-row">
                                 <span class="info-label">Grupo Sanguíneo</span>
-                                <span class="info-value"></span>
+                                <span class="info-value">@(string.IsNullOrEmpty(Model.GrupoSanguineo) ? "No registrado" : Model.GrupoSanguineo)</span>
                             </div>
                         </div>
                     </div>

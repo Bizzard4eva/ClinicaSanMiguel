@@ -1,0 +1,177 @@
+@model IEnumerable<ClinicaSanMiguel.DTOs.GeneralListResponseDto>
+
+@{
+    ViewData["Title"] = "Reservar Cita - Seleccione Médico";
+}
+
+<!-- Paso 5: Seleccione Médico y Fecha -->
+<section class="appointment-section">
+    <div class="container">
+
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            <h1 class="text-primary">Reservar Cita - Clínica San Miguel</h1>
+            <p class="text-muted">Selecciona el médico y la fecha para tu cita.</p>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container mb-5">
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 1: Seleccione Paciente</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 2: Seleccione Seguro</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 3: Seleccione Especialidad</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 4: Seleccione Clínica</span>
+                </div>
+                <div class="step active">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 5: Seleccione Médico</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 6: Confirmación</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de selección -->
+        <div class="doctor-selection-container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form asp-controller="ReservaMedica" asp-action="SelectDoctor" method="post" id="doctorForm">
+                        
+                        <!-- Selección de médico -->
+                        <div class="doctor-selection mb-4">
+                            <div class="form-group">
+                                <label class="form-label">Seleccione el médico</label>
+                                <select name="idDoctorSeleccionado" class="form-select doctor-select" required>
+                                    <option value="">SELECCIONE UN MÉDICO</option>
+                                    @if(Model != null)
+                                    {
+                                        @foreach(var doctor in Model)
+                                        {
+                                            <option value="@doctor.Id">Dr. @doctor.Nombre</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Selección de fecha y hora -->
+                        <div class="datetime-selection mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Fecha de la cita</label>
+                                        <input type="date" name="fecha" class="form-control" required 
+                                               min="@DateTime.Now.ToString("yyyy-MM-dd")" 
+                                               max="@DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd")" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Hora de la cita</label>
+                                        <select name="hora" class="form-select" required>
+                                            <option value="">SELECCIONE HORA</option>
+                                            <option value="08:00">08:00 AM</option>
+                                            <option value="08:30">08:30 AM</option>
+                                            <option value="09:00">09:00 AM</option>
+                                            <option value="09:30">09:30 AM</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="10:30">10:30 AM</option>
+                                            <option value="11:00">11:00 AM</option>
+                                            <option value="11:30">11:30 AM</option>
+                                            <option value="14:00">02:00 PM</option>
+                                            <option value="14:30">02:30 PM</option>
+                                            <option value="15:00">03:00 PM</option>
+                                            <option value="15:30">03:30 PM</option>
+                                            <option value="16:00">04:00 PM</option>
+                                            <option value="16:30">04:30 PM</option>
+                                            <option value="17:00">05:00 PM</option>
+                                            <option value="17:30">05:30 PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mostrar selecciones -->
+                        <div class="selection-summary mb-4" id="selectionSummary" style="display: none;">
+                            <div class="alert alert-warning">
+                                <h6>Resumen de su cita:</h6>
+                                <p id="doctorName" class="mb-1"></p>
+                                <p id="appointmentDateTime" class="mb-0"></p>
+                            </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div class="doctor-info mb-4">
+                            <div class="alert alert-info">
+                                <p class="mb-0">* Complete todos los campos para proceder con la reserva</p>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="action-buttons text-center mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-3" onclick="history.back()">
+                                Regresar
+                            </button>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                Reservar Cita
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Función para actualizar el resumen
+            function updateSummary() {
+                const doctorText = $('.doctor-select option:selected').text();
+                const fecha = $('input[name="fecha"]').val();
+                const hora = $('select[name="hora"] option:selected').text();
+                
+                if (doctorText !== 'SELECCIONE UN MÉDICO' && fecha && hora !== 'SELECCIONE HORA') {
+                    $('#doctorName').text(doctorText);
+                    $('#appointmentDateTime').text(`Fecha: ${fecha} - Hora: ${hora}`);
+                    $('#selectionSummary').show();
+                } else {
+                    $('#selectionSummary').hide();
+                }
+            }
+
+            // Eventos para actualizar el resumen
+            $('.doctor-select, input[name="fecha"], select[name="hora"]').on('change', updateSummary);
+
+            // Combinar fecha y hora antes del envío
+            $('#doctorForm').on('submit', function(e) {
+                const fecha = $('input[name="fecha"]').val();
+                const hora = $('select[name="hora"]').val();
+                
+                if (fecha && hora) {
+                    const fechaHora = fecha + 'T' + hora + ':00';
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'FechaHora',
+                        value: fechaHora
+                    }).appendTo(this);
+                }
+            });
+        });
+    </script>
+}

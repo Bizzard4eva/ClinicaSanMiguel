@@ -13,7 +13,5 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
 
         // Listados
         Task<List<TipoSangre>> ListBloodTypeAsync();
-        Task<Paciente?> GetPacienteByIdAsync(int pacienteId);
-        Task<List<Paciente>> GetFamiliaresByTitularAsync(int titularId);
     }
 }

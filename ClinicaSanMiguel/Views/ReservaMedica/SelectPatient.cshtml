@@ -1,37 +1,120 @@
-﻿
+@model IEnumerable<ClinicaSanMiguel.DTOs.PatientRelativesDto>
+
 @{
-    @model IEnumerable<ClinicaSanMiguel.DTOs.PatientRelativesDto>
+    ViewData["Title"] = "Reservar Cita - Seleccione Paciente";
 }
 
-<h2>Selecciona el paciente para la reserva</h2>
+<!-- Paso 1: Seleccione Paciente - Inspirado en 03.png -->
+<section class="appointment-section">
+    <div class="container">
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Parentesco</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
-            <tr>
-                <td>@p.Nombre</td>
-                <td>@p.Parentesco</td>
-                <td>
-                    <a asp-controller="ReservaMedica"
-                       asp-action="SelectHealthInsurance"
-                       asp-route-idPaciente="@p.Id"
-                       class="btn btn-primary">
-                        Seleccionar
-                    </a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            <h1 class="text-primary">Reservar Cita</h1>
+            <p class="text-muted">Reserva tu Cita o la de tu familiar haciendo click en su nombre.</p>
+        </div>
 
-<a asp-controller="Paciente" asp-action="AddFamiliar" class="btn btn-success">
-    ➕ Agregar familiar
-</a>
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container mb-5">
+            <div class="progress-steps">
+                <div class="step active">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 1: Seleccione Paciente</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 2: Seleccione Seguro</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 3: Seleccione Especialidad</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 4: Seleccione Médico</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 5: Confirmación</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selección de paciente -->
+        <div class="patient-selection-container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="selection-card">
+                        <!-- Familiares (incluye titular) -->
+                        <div class="patient-option mb-4">
+                            <h4 class="text-primary mb-3">Selecciona el paciente</h4>
+                            @if(Model != null && Model.Any())
+                            {
+                                @foreach(var paciente in Model)
+                                {
+                                    <div class="patient-card mb-3 @(paciente.Parentesco == "Titular" ? "titular-card" : "")" data-patient-id="@paciente.Id">
+                                        <div class="patient-info">
+                                            <h5 class="patient-name">@paciente.Nombre</h5>
+                                            <p class="patient-details">@paciente.Parentesco</p>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    No se encontraron pacientes disponibles
+                                </div>
+                            }
+                                
+                            <a asp-controller="Paciente" asp-action="AddFamiliar" class="add-family-link text-decoration-none">
+                                ➕ Registra a tus familiares
+                            </a>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="action-buttons text-center mt-4">
+                            <form asp-controller="ReservaMedica" asp-action="SelectPatient" method="post" id="patientForm">
+                                @{
+                                    var defaultPatientId = Model?.FirstOrDefault()?.Id ?? 1;
+                                }
+                                <input type="hidden" name="idPacienteSeleccionado" id="selectedPatientId" value="@defaultPatientId" />
+                                <button type="button" class="btn btn-outline-secondary me-3" onclick="history.back()">
+                                    Regresar
+                                </button>
+                                <button type="submit" class="btn btn-warning btn-lg">
+                                    Continuar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.patient-card').click(function() {
+                // Remover selección anterior
+                $('.patient-card').removeClass('selected');
+                
+                // Seleccionar nueva opción
+                $(this).addClass('selected');
+                
+                // Actualizar el ID del paciente seleccionado
+                const patientId = $(this).data('patient-id');
+                $('#selectedPatientId').val(patientId);
+            });
+
+            // Seleccionar titular por defecto (o el primero si no hay titular)
+            if ($('.titular-card').length > 0) {
+                $('.titular-card').first().addClass('selected');
+            } else {
+                $('.patient-card').first().addClass('selected');
+            }
+        });
+    </script>
+}

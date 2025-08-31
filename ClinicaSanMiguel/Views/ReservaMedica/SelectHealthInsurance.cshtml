@@ -1,22 +1,138 @@
-﻿
+@model IEnumerable<ClinicaSanMiguel.DTOs.GeneralListResponseDto>
+
 @{
-    @model IEnumerable<ClinicaSanMiguel.DTOs.GeneralListResponseDto>
-    ViewData["Title"] = "Seleccionar seguro";
+    ViewData["Title"] = "Reservar Cita - Seleccione Seguro";
 }
 
-<h2>Selecciona tu seguro de salud</h2>
+<!-- Paso 2: Seleccione Seguro -->
+<section class="appointment-section">
+    <div class="container">
 
-<form asp-action="SelectHealthInsurance" method="post">
-    <div class="form-group">
-        <label for="idSeguroSeleccionado">Seguro</label>
-        <select id="idSeguroSeleccionado" name="idSeguroSeleccionado" class="form-control" required>
-            <option value="">-- Selecciona un seguro --</option>
-            @foreach (var seguro in Model)
-            {
-                <option value="@seguro.Id">@seguro.Nombre</option>
-            }
-        </select>
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            <h1 class="text-primary">Reservar Cita - Clínica San Miguel</h1>
+            <p class="text-muted">Selecciona con qué tipo de seguro cuentas.</p>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container mb-5">
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 1: Seleccione Paciente</span>
+                </div>
+                <div class="step active">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 2: Seleccione Seguro</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 3: Seleccione Especialidad</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 4: Seleccione Médico</span>
+                </div>
+                <div class="step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 5: Confirmación</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de selección -->
+        <div class="insurance-selection-container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form asp-controller="ReservaMedica" asp-action="SelectHealthInsurance" method="post" id="insuranceForm">
+                        
+                        <!-- Selección de seguro -->
+                        <div class="insurance-selection mb-4">
+                            <h4 class="text-center mb-3">¿Cuenta con seguro?</h4>
+                            <div class="insurance-options">
+                                <button type="button" class="btn insurance-btn active" data-insurance="true">
+                                    SÍ, CUENTO CON SEGURO
+                                </button>
+                                <button type="button" class="btn insurance-btn" data-insurance="false">
+                                    NO ESTOY ASEGURADO
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Selección de seguro específico -->
+                        <div class="insurance-provider-selection mb-4" id="insuranceProviderSection">
+                            <div class="form-group">
+                                <label class="form-label">Seleccione su seguro:</label>
+                                <select name="idSeguroSeleccionado" id="seguroSelect" class="form-select">
+                                    <option value="">SELECCIONE</option>
+                                    @if(Model != null)
+                                    {
+                                        @foreach(var seguro in Model)
+                                        {
+                                            <option value="@seguro.Id">@seguro.Nombre</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div class="insurance-info mb-4" id="insuranceInfo">
+                            <div class="alert alert-info">
+                                <p class="mb-0">* Seleccione su seguro de salud para continuar</p>
+                            </div>
+                        </div>
+
+                        <!-- Sin seguro (oculto por defecto) -->
+                        <div class="no-insurance-info mb-4" id="noInsuranceInfo" style="display: none;">
+                            <div class="alert alert-warning">
+                                <p class="mb-0">Procederá como paciente particular sin cobertura de seguro</p>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="action-buttons text-center mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-3" onclick="history.back()">
+                                Regresar
+                            </button>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                Continuar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <button type="submit" class="btn btn-primary mt-3">Continuar</button>
-</form>
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Manejo de botones de seguro
+            $('.insurance-btn').click(function() {
+                $('.insurance-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                const hasInsurance = $(this).data('insurance');
+                
+                if (hasInsurance) {
+                    $('#insuranceProviderSection').show();
+                    $('#insuranceInfo').show();
+                    $('#noInsuranceInfo').hide();
+                    $('#seguroSelect').prop('required', true);
+                } else {
+                    $('#insuranceProviderSection').hide();
+                    $('#insuranceInfo').hide();
+                    $('#noInsuranceInfo').show();
+                    $('#seguroSelect').val('').prop('required', false);
+                }
+            });
+
+            // Inicializar estado por defecto (con seguro)
+            $('#insuranceProviderSection').show();
+            $('#insuranceInfo').show();
+            $('#seguroSelect').prop('required', true);
+        });
+    </script>
+}

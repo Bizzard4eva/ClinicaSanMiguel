@@ -28,7 +28,7 @@ namespace ClinicaSanMiguel.Controllers
         [HttpPost]
         public IActionResult SelectPatient(int idPacienteSeleccionado)
         {
-            HttpContext.Session.SetInt32("PacienteSelecionado", idPacienteSeleccionado);
+            HttpContext.Session.SetInt32("PacienteSeleccionado", idPacienteSeleccionado);
             return RedirectToAction("SelectHealthInsurance");
         }
 
@@ -137,7 +137,7 @@ namespace ClinicaSanMiguel.Controllers
             if (idPaciente == null) return RedirectToAction("SelectLoginRegister", "Home");
 
             var citaMedica = HttpContext.Session.GetInt32("idCitaMedica");
-            var response = _citaMedicaRepository.DetailMedicalAsync(citaMedica.Value);
+            var response = await _citaMedicaRepository.DetailMedicalAsync(citaMedica.Value);
             return View(response);
         }
 

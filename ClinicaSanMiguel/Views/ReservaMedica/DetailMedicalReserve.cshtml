@@ -1,0 +1,160 @@
+@model ClinicaSanMiguel.DTOs.DetailMedicalResponseDto
+
+@{
+    ViewData["Title"] = "Reservar Cita - Confirmación";
+}
+
+<!-- Paso 6: Confirmación de Reserva -->
+<section class="appointment-section">
+    <div class="container">
+
+        <!-- Título de la página -->
+        <div class="page-title text-center mb-4">
+            <h1 class="text-primary">¡Cita Reservada Exitosamente!</h1>
+            <p class="text-muted">Tu cita ha sido confirmada. A continuación los detalles:</p>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-bar-container mb-5">
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 1: Seleccione Paciente</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 2: Seleccione Seguro</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 3: Seleccione Especialidad</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 4: Seleccione Clínica</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 5: Seleccione Médico</span>
+                </div>
+                <div class="step active">
+                    <div class="step-circle"></div>
+                    <span class="step-label">Paso 6: Confirmación</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalles de la cita -->
+        <div class="appointment-details-container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="details-card">
+                        <div class="card-header text-center bg-primary text-white">
+                            <h4 class="mb-0">Detalles de su Cita Médica</h4>
+                        </div>
+                        <div class="card-body">
+                            @if(Model != null)
+                            {
+                                <div class="detail-row mb-3">
+                                    <strong>Paciente:</strong>
+                                    <span>@Model.Paciente</span>
+                                </div>
+                                
+                                <div class="detail-row mb-3">
+                                    <strong>Especialidad:</strong>
+                                    <span>@Model.Especialidad</span>
+                                </div>
+                                
+                                <div class="detail-row mb-3">
+                                    <strong>Médico:</strong>
+                                    <span>Dr. @Model.Medico</span>
+                                </div>
+                                
+                                <div class="detail-row mb-3">
+                                    <strong>Clínica:</strong>
+                                    <span>@Model.Clinica</span>
+                                </div>
+                                
+                                <div class="detail-row mb-3">
+                                    <strong>Fecha y Hora:</strong>
+                                    <span>@Model.FechaHora.ToString("dd/MM/yyyy hh:mm tt")</span>
+                                </div>
+                                
+                                <div class="detail-row mb-3">
+                                    <strong>Seguro:</strong>
+                                    <span>@Model.Seguro</span>
+                                </div>
+                                
+                                <div class="detail-row mb-3 price-section">
+                                    <strong>Precio:</strong>
+                                    <span class="price">S/ @Model.Precio.ToString("N2")</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    No se pudieron cargar los detalles de la cita.
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Información importante -->
+                    <div class="important-info mt-4">
+                        <div class="alert alert-info">
+                            <h6>Información importante:</h6>
+                            <ul class="mb-0">
+                                <li>Llega 15 minutos antes de tu cita</li>
+                                <li>Trae tu documento de identidad</li>
+                                <li>Si tienes seguro, presenta tu tarjeta</li>
+                                <li>Para cancelar o reprogramar, llama al menos 24 horas antes</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="action-buttons text-center mt-4">
+                        <a asp-controller="ReservaMedica" asp-action="SelectPatient" class="btn btn-outline-primary me-3">
+                            Reservar Nueva Cita
+                        </a>
+                        <a asp-controller="Paciente" asp-action="Dashboard" class="btn btn-primary">
+                            Ir al Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .details-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .price-section {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 1.1em;
+    }
+
+    .price {
+        color: #28a745;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+</style>

@@ -25,22 +25,22 @@ namespace ClinicaSanMiguel.Controllers
         public async Task<IActionResult> Dashboard()
         {
             // Verificar que el usuario esté logueado
-            var pacienteId = HttpContext.Session.GetInt32("PacienteId");
+            var pacienteId = HttpContext.Session.GetInt32("IdPaciente");
             if (!pacienteId.HasValue)
             {
                 TempData["Error"] = "Debe iniciar sesión para acceder al dashboard.";
                 return RedirectToAction("Login");
             }
 
-            // Obtener los datos del paciente
-            var paciente = await _pacienteRepository.GetPacienteByIdAsync(pacienteId.Value);
-            if (paciente == null)
+            // Obtener el perfil completo del paciente (con peso, altura, tipo sangre)
+            var profileData = await _pacienteRepository.LoadingProfileAsync(pacienteId.Value);
+            if (profileData == null)
             {
                 TempData["Error"] = "No se pudieron cargar los datos del paciente.";
                 return RedirectToAction("Login");
             }
 
-            return View(paciente);
+            return View(profileData);
         }
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequestDto request)
@@ -54,8 +54,7 @@ namespace ClinicaSanMiguel.Controllers
             {
                 HttpContext.Session.SetInt32("IdPaciente", resultado.Resultado);
                 TempData["Mensaje"] = "Bienvenido!";
-                return RedirectToAction("Profile", "Paciente"); // TODO
-				// return RedirectToAction("Dashboard");
+                return RedirectToAction("Dashboard");
             }
             else
             {

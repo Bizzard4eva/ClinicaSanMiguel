@@ -14,12 +14,7 @@ namespace ClinicaSanMiguel.Repositorys.Interfaces
         Task<List<GeneralListResponseDto>> SpecialtiesAsync();
         Task<List<GeneralListResponseDto>> DoctorsAsync(int idClinica, int idEspecialidad);
         Task<List<GeneralListResponseDto>> HealthInsuranceAsync();
-        
-        Task<List<Especialidad>> GetEspecialidadesAsync();
-        Task<List<SeguroSalud>> GetSegurosAsync();
-        Task<List<Medico>> GetMedicosByEspecialidadAsync(int especialidadId);
-        Task<Especialidad?> GetEspecialidadByIdAsync(int especialidadId);
-        Task<Medico?> GetMedicoByIdAsync(int medicoId);
-        Task<SeguroSalud?> GetSeguroByIdAsync(int seguroId);
+
+
     }
 }
