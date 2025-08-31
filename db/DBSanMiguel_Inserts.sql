@@ -373,7 +373,7 @@ INSERT INTO Medicos (nombres, apellidos, celular, correo, idEspecialidad) VALUES
 -- Psiquiatría (15)
 ('Jorge', 'Bermúdez', '987100115', 'jorge.bermudez@clinica.com', 15),
 ('Silvana', 'Chavez', '987100116', 'silvana.chavez@clinica.com', 15),
-('Enrique', 'Soria', 'enrique.soria@clinica.com', 15),
+('Enrique', 'Soria', '987100116', 'enrique.soria@clinica.com', 15),
 
 -- Psicología (16)
 ('Laura', 'Matos', '987100118', 'laura.matos@clinica.com', 16),
