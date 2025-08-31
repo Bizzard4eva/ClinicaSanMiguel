@@ -136,10 +136,9 @@ namespace ClinicaSanMiguel.Controllers
             var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
             if (idPaciente == null) return RedirectToAction("SelectLoginRegister", "Home");
 
-            var detalle = new DetailMedicalResponseDto();
-            
-
-            return View();
+            var citaMedica = HttpContext.Session.GetInt32("idCitaMedica");
+            var response = _citaMedicaRepository.DetailMedicalAsync(citaMedica.Value);
+            return View(response);
         }
 
     }
