@@ -29,7 +29,7 @@ namespace ClinicaSanMiguel.Controllers
             if (!pacienteId.HasValue)
             {
                 TempData["Error"] = "Debe iniciar sesión para acceder al dashboard.";
-                return RedirectToAction("Login");
+                return RedirectToAction("SelectLoginRegister", "Home");
             }
 
             // Obtener el perfil completo del paciente (con peso, altura, tipo sangre)
@@ -87,17 +87,6 @@ namespace ClinicaSanMiguel.Controllers
                 ViewBag.Error = resultado.Mensaje;
                 return View(request);
             }
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> Profile()
-        {
-            var idPaciente = HttpContext.Session.GetInt32("IdPaciente");
-            if (idPaciente == null) return RedirectToAction("SelectLoginRegister", "Home");
-
-            var profile = await _pacienteRepository.LoadingProfileAsync(idPaciente.Value);
-            return View(profile);
         }
 
 
@@ -183,7 +172,7 @@ namespace ClinicaSanMiguel.Controllers
             if (resultado.Resultado > 0)
             {
                 TempData["Mensaje"] = "Perfil actualizado correctamente!";
-                return RedirectToAction("Profile", "Paciente"); // TODO
+                return RedirectToAction("Dashboard", "Paciente"); // TODO
             }
             else
             {

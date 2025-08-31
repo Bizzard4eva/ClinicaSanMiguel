@@ -27,10 +27,13 @@
             <a href="@Url.Action("SelectPatient", "ReservaMedica")" class="btn btn-primary btn-lg me-3 mb-2">
                 Reservar una cita presencial
             </a>
-            <a href="#" class="btn btn-outline-primary btn-lg mb-2">
-                Reservar una teleconsulta
-            </a>
         </div>
+
+        <div class="text-center mb-5">
+            <a asp-action="UpdateProfile" asp-controller="Paciente" class="btn btn-primary">Editar Perfil</a>
+            <a asp-action="Logout" asp-controller="Paciente" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
+
 
         <div class="row">
             <!-- Patient Profile Section -->
@@ -145,7 +148,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </section>
 
